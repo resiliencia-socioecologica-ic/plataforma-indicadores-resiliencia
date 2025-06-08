@@ -425,8 +425,36 @@ const DownloadHandler = (() => {
             currentY = addFormattedText("Tópicos abordados no relatório:", pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: LIST_ITEM_SPACING });
             const topics = [ "1. Conceitos relevantes;", "2. Objetivos do sistema de indicadores;", "3. Sugestão para análise dos resultados e encaminhamentos;", "4. Resultados da aplicação dos indicadores na instituição participante, com descrição de cada dimensão e indicador;", "5. Referências." ];
             for (let i = 0; i < topics.length; i++) { const topic = String(topics[i] || ""); currentY = addFormattedText(topic, pageMargin + 5, currentY, { fontSize: FONT_TEXT_CAPA, maxWidth: pageWidth - 10, spaceAfter: LIST_ITEM_SPACING + (i === topics.length -1 ? PARAGRAPH_SPACING : 0), isListItem: true }); }
-            const materialText = "O material aqui disponível foi gerado em/por xxx site [endereço do site - aqui ou nota rodapé], produzido por Gabriel Mazetto(I) (bolsista PIBIC/CNPq/INPE), Maria Paula Pires de Oliveira(I), Denise Helena Lombardo Ferreira(II) e Minella Alves Martins(II), com apoio da Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) – Código de Financiamento 001.";
-            currentY = addFormattedText(materialText, pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
+            const materialTextPart1 = "O material aqui disponível foi gerado em:";
+            const materialLink = "https://resiliencia-socioecologica-ic.github.io/plataforma-indicadores-resiliencia/";
+            const materialTextPart2 = "Produzido por Gabriel Mazetto(I) (bolsista PIBIC/CNPq/INPE), Maria Paula Pires de Oliveira(I), Denise Helena Lombardo Ferreira(II) e Minella Alves Martins(II), com apoio da Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) – Código de Financiamento 001.";
+            
+            const indentAmount = pdf.getStringUnitWidth(PARAGRAPH_INDENT) * FONT_FOOTER_CAPA / pdf.internal.scaleFactor;
+
+
+            // Adiciona a primeira parte do texto do material com indentação
+            currentY = addFormattedText(materialTextPart1, pageMargin, currentY, { 
+                fontSize: FONT_TEXT_CAPA, // Usando FONT_FOOTER_CAPA
+                lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
+                spaceAfter: 1, // Espaço mínimo antes do link
+                isParagraph: true
+            });
+            
+            // Adiciona o link na linha seguinte, alinhado com a indentação da primeira parte
+            currentY = addFormattedText(materialLink, pageMargin, currentY, { 
+                fontSize: FONT_TEXT_CAPA, 
+                lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
+                spaceAfter: 1, // Espaço mínimo antes da parte 2
+            });
+
+            // Adiciona a segunda parte do texto do material com indentação
+            currentY = addFormattedText(materialTextPart2, pageMargin, currentY, { 
+                fontSize: FONT_TEXT_CAPA, 
+                lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
+                spaceAfter: PARAGRAPH_SPACING -1,
+                isParagraph: true
+
+            });
             currentY = addFormattedText("O conteúdo textual deste relatório é proveniente de Oliveira (2023) e Oliveira, Valdanha Neto e Figueiredo (2024).", pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: SECTION_SPACING, isParagraph: true });
             if (currentPageNum === 1) {
                 const nota1 = "(I) Pontifícia Universidade Católica de Campinas (PUC-Campinas)"; const nota2 = "(II) Instituto Nacional de Pesquisas Espaciais (INPE)";
