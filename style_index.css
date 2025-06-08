@@ -1,0 +1,401 @@
+/* style_index.css */
+
+body {
+    padding-bottom: 80px;
+    position: relative; /* Necessário se o back-btn for absolute em relação ao body */
+}
+
+.intro-container {
+    max-width: 900px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* --- Botão Voltar --- (Estilo da sua página de resultados) */
+.back-btn {
+    position: fixed; /* Fixo na tela */
+    top: 20px;
+    left: 20px;
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+    color: #ffffff;
+    padding: 10px 20px; /* Padding original */
+    cursor: pointer;
+    font-size: 16px; /* Tamanho da fonte original */
+    transition: background-color 0.3s, border-color 0.3s;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000; /* Para ficar acima de outro conteúdo */
+    display: flex; /* Para alinhar ícone e texto */
+    align-items: center; /* Alinha verticalmente */
+}
+.back-btn i {
+    margin-right: 8px; /* Espaço entre o ícone e o texto */
+}
+
+.back-btn:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+
+.main-header-title {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #e8f0fe;
+    border-radius: 8px;
+    border-left: 5px solid #0056b3;
+}
+
+.main-header-title h1 {
+    color: #0056b3;
+    font-size: 1.8em;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.content-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Estilo para a seção de materiais quando visível, para não ser cortada pelo botão voltar */
+/* A alternativa é adicionar padding-top ao container dela, como fiz no HTML inline */
+/* #material-view-content .intro-container {
+    padding-top: 70px; 
+} */
+
+
+.content-section h2 {
+    font-size: 1.5em;
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.content-section h3 {
+    font-size: 1.25em;
+    color: #343a40;
+    margin-top: 0;
+    margin-bottom: 12px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.content-section p {
+    font-size: 1em;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 10px;
+}
+.content-section p:last-child {
+    margin-bottom: 0;
+}
+
+.placeholder-text {
+    font-style: italic;
+    color: #6c757d;
+    text-align: center;
+    padding: 10px;
+    border: 1px dashed #ced4da;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.image-placeholder {
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed #ced4da;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+.image-placeholder img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+ul.objectives-list,
+ul.dimensions-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+ul.objectives-list li,
+ul.dimensions-list li {
+    padding: 8px 0 8px 30px;
+    position: relative;
+    font-size: 1em;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #f0f0f0;
+}
+ul.objectives-list li:last-child,
+ul.dimensions-list li:last-child {
+    border-bottom: none;
+}
+
+ul.objectives-list li i,
+ul.dimensions-list li i {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: #007bff;
+    font-size: 1.1em;
+}
+
+.btn-inline {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #fff;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    text-decoration: none;
+    margin: 0 2px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    vertical-align: baseline;
+}
+
+.btn-inline:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: #fff;
+    text-decoration: none;
+}
+
+
+hr.section-divider {
+    margin: 35px 0;
+    border-top: 1px solid #ced4da;
+}
+
+.team-section h3,
+.funding-note h4 {
+    color: #495057;
+    font-size: 1.15em;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.team-section p,
+.funding-note p {
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: #555;
+}
+.team-section a,
+.funding-note a {
+    color: #0056b3;
+}
+.team-section .affiliation-note {
+    font-size: 0.85em;
+    color: #6c757d;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+.funding-note {
+    background-color: #f8f9fa;
+    border-left: 4px solid #6c757d;
+}
+
+/* Styles for the integrated "PÁGINA 2" content (Material View) */
+#material-view-content .content-section h2 { /* Specific title styling for this view if needed */
+    color: #28a745; 
+    border-bottom-color: #28a745;
+}
+
+.material-card {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid #007bff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.material-card h3 {
+    color: #0056b3;
+    font-size: 1.15em;
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.material-card h3 i {
+    color: #007bff;
+}
+.material-card p {
+    font-size: 0.95em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.btn-download-material {
+    display: inline-block;
+    width: fit-content;
+    margin-top: 5px;
+    /* Assuming btn-secondary is defined in style.css */
+}
+.btn-download-material i {
+    margin-right: 6px;
+}
+
+.form-links-container-inline {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+    border: 1px solid #cfe2f3;
+}
+
+.form-links-container-inline p {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-links-container-inline ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.form-links-container-inline li a {
+    display: block;
+    padding: 10px 12px;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    color: #007bff;
+    text-decoration: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    text-align: left;
+}
+.form-links-container-inline li a:hover {
+    background-color: #e9ecef;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    text-decoration: none;
+}
+.form-links-container-inline li a i {
+    margin-right: 8px;
+}
+
+.form-text-inline {
+    display: block;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5;
+    background-color: #fffadf;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #f0e68c;
+}
+.form-text-inline i {
+    margin-right: 5px;
+    color: #6c757d;
+}
+
+.note-customization {
+    background-color: #ffebee;
+    border: 1px solid #ffcdd2;
+    border-left: 4px solid #d32f2f;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+.note-customization strong {
+    color: #c62828;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #e9ecef;
+    border-top: 1px solid #ced4da;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.8em;
+    color: #6c757d;
+    z-index: 1200;
+    line-height: 1.4;
+}
+footer p { margin: 0; }
+footer strong { color: #495057; }
+footer a { color: #0056b3; }
+
+
+
+.form-duplication-guide {
+    background-color: #e9f5ff; /* Um azul bem claro, similar ao da imagem de exemplo */
+    padding: 15px 20px;
+    margin-bottom: 20px; /* Espaço antes do próximo parágrafo */
+    border-radius: 4px;
+}
+
+.form-duplication-guide .guide-intro {
+    font-size: 0.95em;
+    color: #334; /* Cor um pouco mais escura para contraste */
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.form-duplication-guide ol.guide-steps {
+    list-style: none; /* Remove os marcadores padrão da lista ordenada */
+    padding-left: 0;
+    margin: 0;
+}
+
+.form-duplication-guide ol.guide-steps li {
+    display: flex; /* Alinha o número e o texto horizontalmente */
+    align-items: flex-start; /* Alinha no topo se o texto for longo */
+    margin-bottom: 10px;
+    font-size: 0.9em; /* Tamanho do texto dos passos */
+    line-height: 1.6;
+    color: #333;
+}
+
+.form-duplication-guide ol.guide-steps li:last-child {
+    margin-bottom: 0;
+}
+
+.form-duplication-guide .step-number {
+    font-weight: bold;
+    color: #0056b3; /* Cor azul para os números */
+    min-width: 25px; /* Garante espaço para o número e o ponto, ajusta se necessário */
+    margin-right: 8px; /* Espaço entre o número e o texto do passo */
+    flex-shrink: 0; /* Impede que o número seja espremido */
+    padding-top: 1px; /* Pequeno ajuste vertical para alinhar melhor com o texto */
+}
+
+.form-duplication-guide .step-text {
+    flex-grow: 1; /* Permite que o texto ocupe o espaço restante */
+}
+
+/* Ajuste para o parágrafo que vem depois da explicação */
+.material-card > p:nth-of-type(2) { /* Seleciona o <p> que vem após .form-duplication-guide */
+    margin-top: 0; /* Remove margem superior se houver, pois .form-duplication-guide já tem margin-bottom */
+}
