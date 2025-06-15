@@ -474,7 +474,7 @@ const DownloadHandler = (() => {
         console.log("Gerando Introdução - Conceitos Relevantes...");
         currentY = addFormattedText("CONCEITOS RELEVANTES¹", pageMargin, currentY, { fontSize: FONT_TITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, align:'center', spaceAfter: SECTION_SPACING });
         currentY = addFormattedText("Sistemas socioecológicos", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
-        currentY = addFormattedText("O conceito de sistema socioecológico tem sido utilizado para integrar processos e componentes socioeconômicos e biofísicos para compreender, por exemplo, contextos em que múltiplos grupos interagem, se fatores biofísicos afetam e são afetados por atividades sociais e econômicas e se aspectos de escalas locais, nacionais e internacionais, como políticas públicas, cultura e poder, influenciam sua dinâmica (BUSCHBACHER, 2014).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
+        currentY = addFormattedText("O conceito de sistema socioecológico tem sido utilizado para integrar processos e componentes socioeconômicos e biofísicos para compreender, por exemplo, contextos em que múltiplos grupos interagem, fatores biofísicos afetam e são afetados por atividades sociais e econômicas e aspectos de escalas locais, nacionais e internacionais, como políticas públicas, cultura e poder, influenciam sua dinâmica (BUSCHBACHER, 2014).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
         currentY = addFormattedText("Resiliência socioecológica", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
         currentY = addFormattedText("Não existe um consenso referente ao significado de resiliência socioecológica, dada à variedade de interpretações referentes ao termo ‘resiliência'. Aqui, entende-se como a capacidade do sistema socioecológico de aprender, se reorganizar, mudar e se adaptar para responder a perturbações e lidar com incertezas, ao mesmo tempo em que mantém suas características de estrutura e de função e as relações fundamentais que caracterizam seu regime de existência.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
         currentY = addFormattedText("Indicadores", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
@@ -519,9 +519,31 @@ const DownloadHandler = (() => {
         currentY = tableY + PARAGRAPH_SPACING;
         currentY = addFormattedText("Se possível, pode ser interessante que este grupo tenha outros membros da comunidade escolar, além da equipe pedagógica.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
         currentY = addFormattedText("Por fim, a aplicação periódica dos indicadores é importante para acompanhamento dos resultados ao longo dos anos e eventual atualização do plano de ação para suprir lacunas e potencializar pontos fortes.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
-        currentY = addFormattedText("Para ajudar no aprimoramento contínuo deste sistema de indicadores, faça uma avaliação clicando aqui.", pageMargin, currentY, { spaceAfter: LIST_ITEM_SPACING, isParagraph: false });
-        //const contatoItems = [ "- Dúvidas sobre os indicadores, procedimento de análise, ou outras, se houver;", "- Como foi a experiência, por exemplo, como avaliam a utilidade desse sistema de indicadores, a facilidade de aplicação e análise, o uso da plataforma para geração de gráficos e relatório, ou outros pontos que considerarem pertinentes;", "- Sugestões para continuarmos melhorando e para que os indicadores e a plataforma sejam adequados para a utilização nas escolas." ];
-        //for (const item of contatoItems) { currentY = addFormattedText(item, pageMargin + 5, currentY, { maxWidth: pageWidth - 5, spaceAfter: LIST_ITEM_SPACING, isListItem: true }); }
+
+        const textoAntesDoLink = "Para ajudar no aprimoramento contínuo deste sistema de indicadores, faça uma avaliação através do seguinte link:";
+        currentY = addFormattedText(textoAntesDoLink, pageMargin, currentY, { 
+            spaceAfter: 2, // Menor espaço antes da URL
+            isParagraph: false // Não é um parágrafo completo
+        });
+
+        const urlAvaliacao = "https://forms.gle/L56Fs2Zv3Sfwhqf78";
+        const urlFontSize = FONT_BODY_INTRO -1; // Um pouco menor para o link
+        const urlColor = [0, 0, 238]; // Cor azul típica de link
+
+        // Calcular a largura do texto da URL para o retângulo do link
+        pdf.setFontSize(urlFontSize); // Definir a fonte para cálculo correto da largura
+        const urlTextWidth = pdf.getStringUnitWidth(urlAvaliacao) * urlFontSize / pdf.internal.scaleFactor;
+        const urlTextHeight = calculateTextHeight(urlAvaliacao, pageWidth, urlFontSize, LINE_HEIGHT_FACTOR_NORMAL); // Usar a função existente
+
+        // Verificar se a URL cabe na linha atual
+        if (currentY + urlTextHeight + LIST_ITEM_SPACING > pageHeight - pageMargin ) {
+            addNewPageAndNumber();
+        }
+
+        pdf.setTextColor(urlColor[0], urlColor[1], urlColor[2]);
+        pdf.textWithLink(urlAvaliacao, pageMargin, currentY, { url: urlAvaliacao });
+        pdf.setTextColor(COLOR_BLACK[0], COLOR_BLACK[1], COLOR_BLACK[2]); // Resetar cor do texto
+        currentY += urlTextHeight + LIST_ITEM_SPACING;
 
 
         // ***** INÍCIO: SEÇÃO RESULTADO DA APLICAÇÃO E PERFIL DOS PARTICIPANTES *****

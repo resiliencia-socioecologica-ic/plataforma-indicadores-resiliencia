@@ -111,19 +111,23 @@ body {
     margin-bottom: 15px;
 }
 
-.image-placeholder {
-    text-align: center;
-    padding: 20px;
-    border: 1px dashed #ced4da;
-    border-radius: 4px;
-    background-color: #f8f9fa;
-    color: #6c757d;
-    font-size: 0.9em;
+.image-display-container {
+    text-align: center; /* Centraliza a imagem se ela for menor que o container */
+    margin-top: 15px; /* Espaço acima da imagem */
+    margin-bottom: 15px; /* Espaço abaixo da imagem */
+    padding: 10px; /* Opcional: um pequeno padding ao redor da imagem */
+    background-color: #f8f9fa; /* Opcional: um fundo sutil, se desejar */
+    border: 1px solid #e9ecef; /* Opcional: uma borda sutil */
+    border-radius: 6px; /* Opcional: bordas arredondadas */
 }
-.image-placeholder img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
+
+.image-display-container img {
+    max-width: 100%; /* Garante que a imagem seja responsiva e não ultrapasse o container */
+    height: auto;    /* Mantém a proporção da imagem */
+    border-radius: 4px; /* Opcional: bordas arredondadas para a própria imagem */
+    display: block; /* Remove espaço extra abaixo da imagem se for inline */
+    margin-left: auto; /* Centraliza a imagem se ela for menor que o container */
+    margin-right: auto;
 }
 
 ul.objectives-list,
