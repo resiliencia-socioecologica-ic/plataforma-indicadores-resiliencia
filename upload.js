@@ -1,16 +1,50 @@
+/*
+ * Script: script.js
+ *
+ * Objetivo: Gerenciar o upload, a visualização, a edição e a validação de dados de tabelas
+ * (CSV/XLSX) e de arquivos de configuração completos (JSON) na aplicação.
+ * Ele também controla a interface do usuário para essas operações, incluindo modais
+ * de edição e feedback de status dos arquivos.
+ *
+ * Funcionamento:
+ * 1. Inicializa variáveis globais para armazenar dados de tabelas, nomes de arquivos,
+ * erros de validação e configurações de gráficos carregadas.
+ * 2. Gerencia a interface do usuário (UI) para upload de arquivos:
+ * - Atualiza os nomes e status dos arquivos exibidos nos labels.
+ * - Exibe ícones de sucesso, erro ou processamento para cada arquivo carregado.
+ * 3. Controla a abertura e o fechamento de um modal centralizado para visualização e edição de tabelas.
+ * 4. Processa o upload de arquivos:
+ * - Valida a extensão dos arquivos (CSV/XLSX para tabelas, JSON para configurações completas).
+ * - Lê e faz o parsing dos dados de arquivos CSV e XLSX, limpando linhas e colunas vazias.
+ * - Processa arquivos JSON completos, que contêm todos os dados das tabelas, informações da escola e configurações de gráficos.
+ * 5. Permite adicionar dinamicamente mais campos para upload de arquivos de respostas,
+ * cada um com suas próprias opções de renomear, visualizar e remover.
+ * 6. Oferece funcionalidades de edição para as tabelas exibidas no modal:
+ * - Renderiza os dados em uma tabela HTML, permitindo edição de células.
+ * - Habilita a remoção de linhas e colunas diretamente pela interface do modal.
+ * 7. Implementa funções para salvar e cancelar as alterações feitas nas tabelas dentro do modal.
+ * 8. Realiza validações críticas nos dados da "Tabela Consulta", focando na coluna "No do gráfico"
+ * para garantir o formato correto dos identificadores.
+ * 9. Executa uma validação abrangente de todos os dados carregados (informações da escola,
+ * tabela de consulta e tabelas de respostas) antes de permitir a continuação para a
+ * página de visualização dos gráficos. Esta validação inclui checagem de referências cruzadas
+ * entre a tabela de consulta e as respostas.
+ * 10. Fornece uma opção para carregar e usar uma "Tabela Consulta Base" pré-definida.
+ */
+
+
 // ------------------------ Variáveis Globais e Configurações Iniciais ------------------------ //
 
-let fileErrors = { "file-upload-1": [] }; // Armazena erros de validação por ID de input
-let currentFileUploadId = ""; // ID do input de arquivo sendo editado no modal
-let tableDataMap = {};          // Armazena dados ATUAIS das tabelas -> { "file-upload-1": [ [...], [...] ], ... }
-let originalTableDataMap = {}; // Armazena dados ORIGINAIS (para cancelar) -> { "file-upload-1": [ [...], [...] ], ... }
-let fileNameMap = {};          // Mapeia fileUploadId para nome do arquivo (real ou renomeado) -> { "file-upload-1": "consulta.xlsx", ... }
-let fileExtensionMap = {};     // Mapeia fileUploadId para extensão (ex: ".xlsx") -> { "file-upload-1": ".xlsx", ... }
-let loadedChartConfigs = null;  // Armazena as configurações carregadas do arquivo JSON completo
-let schoolInfoData = null; // Para guardar { name, city, state, responsible }
-let responseIndex = 3; // Índice inicial para os próximos arquivos de resposta (começa em 3 porque 1=Consulta, 2=Respostas Inicial)
+let fileErrors = { "file-upload-1": [] };
+let currentFileUploadId = "";
+let tableDataMap = {};
+let originalTableDataMap = {};
+let fileNameMap = {};
+let fileExtensionMap = {};
+let loadedChartConfigs = null;
+let schoolInfoData = null;
+let responseIndex = 3;
 
-// HTML padrão para o rodapé do modal de edição de tabela (atualizado com novas classes)
 const defaultModalFooterHTML = `
     <button class="btn btn-secondary" onclick="cancelChanges()">Cancelar</button>
     <button class="btn btn-primary" onclick="saveChanges()">Salvar Alterações</button>
@@ -27,7 +61,6 @@ function displayFileInfo(fileUploadId, fileName) {
     const wrapperIdSuffix = fileUploadId.startsWith('file-upload-complete') ? 'complete' : fileUploadId.split('-').pop();
     const wrapper = document.getElementById(`wrapper-${wrapperIdSuffix}`);
     if (!wrapper) {
-        // console.error(`Wrapper não encontrado para ${fileUploadId}`); // Removido console.error para reduzir logs
         return;
     }
 
@@ -65,10 +98,8 @@ const updateStatusIcon = (fileUploadId, statusId) => {
     if (!statusSpan) return;
 
     const hasErrors = fileErrors[fileUploadId]?.length > 0;
-    // Considera sucesso se tiver dados (tabela) ou se for o JSON completo e não tiver erros
     const isSuccess = !!tableDataMap[fileUploadId] || (fileUploadId === 'file-upload-complete' && !hasErrors);
 
-    // Limpa classes e ícone antes de definir o novo estado
     statusSpan.className = 'upload-status';
     statusSpan.innerHTML = '';
 
@@ -76,18 +107,16 @@ const updateStatusIcon = (fileUploadId, statusId) => {
         statusSpan.classList.add("error");
         statusSpan.innerHTML = '<i class="fas fa-times-circle"></i>';
         statusSpan.title = fileErrors[fileUploadId].join('\n');
-    } else if (isSuccess) { // Verifica se tem dados ou é o JSON completo sem erros
+    } else if (isSuccess) { 
         statusSpan.classList.add("success");
         statusSpan.innerHTML = '<i class="fas fa-check-circle"></i>';
         statusSpan.title = 'Arquivo válido';
     } else {
-        // Se não tem erro e nem sucesso (ex: arquivo removido), deixa limpo
         statusSpan.title = '';
     }
 };
 
 
-/** Abre o modal com animação */
 function openModal() {
     const modal = document.getElementById("modal");
     const overlay = document.getElementById("modal-overlay");
@@ -95,7 +124,6 @@ function openModal() {
 
     overlay.style.display = "block";
     modal.style.display = "flex";
-    // Force reflow/repaint before adding the class to ensure the transition plays
     void modal.offsetWidth;
     void overlay.offsetWidth;
 
@@ -103,7 +131,6 @@ function openModal() {
     modal.classList.add("show");
 }
 
-/** Fecha o modal com animação */
 function closeModal() {
     const modal = document.getElementById("modal");
     const overlay = document.getElementById("modal-overlay");
@@ -112,14 +139,13 @@ function closeModal() {
     modal.classList.remove("show");
     overlay.classList.remove("show");
 
-    // Wait for the transition to finish before hiding
     setTimeout(() => {
          modal.style.display = "none";
          overlay.style.display = "none";
          const modalFooter = document.getElementById("modal-footer-content");
-         if (modalFooter) modalFooter.innerHTML = defaultModalFooterHTML; // Reset footer
-         currentFileUploadId = ""; // Reset current file ID being edited
-    }, 300); // Should match the transition duration in CSS
+         if (modalFooter) modalFooter.innerHTML = defaultModalFooterHTML;
+         currentFileUploadId = ""; 
+    }, 300); 
 }
 
 // ------------------------ Processamento e Validação de Arquivos ------------------------ //
@@ -128,15 +154,14 @@ function validarArquivo(event, extensoesValidas, statusId) {
     const fileInput = event.target;
     const file = fileInput.files[0];
     const fileUploadId = fileInput.id;
-    fileErrors[fileUploadId] = []; // Limpa erros ANTES de processar novo arquivo
+    fileErrors[fileUploadId] = []; 
 
-    displayFileInfo(fileUploadId, file ? file.name : null); // Mostra nome e spinner
+    displayFileInfo(fileUploadId, file ? file.name : null); 
 
     if (!file) {
-        // Limpa dados se seleção cancelada
         delete tableDataMap[fileUploadId]; delete originalTableDataMap[fileUploadId];
         delete fileNameMap[fileUploadId]; delete fileExtensionMap[fileUploadId];
-        updateStatusIcon(fileUploadId, statusId); // Limpa status visual
+        updateStatusIcon(fileUploadId, statusId); 
         return;
     }
 
@@ -162,16 +187,16 @@ function validarArquivo(event, extensoesValidas, statusId) {
         const wrapperIdSuffix = fileUploadId.split('-').pop();
         const wrapper = document.getElementById(`wrapper-${wrapperIdSuffix}`);
         const renameInput = wrapper?.querySelector(".rename-input");
-        let currentName = fileName; // Fallback
+        let currentName = fileName; 
         if (renameInput?.value?.trim()) {
             currentName = renameInput.value.trim() + "." + fileExtension;
         } else if (fileUploadId === 'file-upload-1') {
-             currentName = "TabelaConsulta." + fileExtension; // Nome padrão Consulta
+             currentName = "TabelaConsulta." + fileExtension;
         }
         fileNameMap[fileUploadId] = currentName;
         fileExtensionMap[fileUploadId] = "." + fileExtension;
 
-        openTableViewer(fileUploadId, parseInt(wrapperIdSuffix) - 1); // Abre visualizador
+        openTableViewer(fileUploadId, parseInt(wrapperIdSuffix) - 1);
 
     } else {
         alert(`Erro: O arquivo deve ser ${extensoesValidas.join(" ou ")}!`);
@@ -181,7 +206,6 @@ function validarArquivo(event, extensoesValidas, statusId) {
     }
 }
 
-/** Processa o arquivo JSON completo */
 function processCompleteJson(file, fileUploadId, statusId) {
      const reader = new FileReader();
      reader.onload = (e) => { try { const jsonData = JSON.parse(e.target.result); if (!jsonData?.originalData?.TabelaConsulta || !jsonData.originalData.DemaisTabelas || !jsonData.chartConfigs) { throw new Error("Estrutura JSON inválida ou dados essenciais ausentes."); } const { TabelaConsulta, DemaisTabelas } = jsonData.originalData; const loadedSchoolInfo = jsonData.schoolInfo; const configs = jsonData.chartConfigs; tableDataMap = {}; originalTableDataMap = {}; fileNameMap = {}; fileErrors = { "file-upload-1": [] }; loadedChartConfigs = null; localStorage.removeItem("schoolInfo"); schoolInfoData = null; document.querySelectorAll('.upload-status:not(#status-complete)').forEach(s => { s.innerHTML=''; s.className='upload-status'; s.title=''; }); document.querySelectorAll('.file-input-wrapper:not(#wrapper-complete) .file-name').forEach(s => { s.textContent='Nenhum arquivo selecionado'; s.title=''; }); document.querySelectorAll('.rename-input').forEach(inp => { inp.value = (inp.closest('.file-input-wrapper')?.id === 'wrapper-2') ? 'Estudantes' : ''; }); document.getElementById('responses-container').innerHTML = ''; responseIndex = 3; if (!TabelaConsulta || !Array.isArray(TabelaConsulta) || TabelaConsulta.length === 0) throw new Error("TabelaConsulta ausente/vazia no JSON."); const consultaId = "file-upload-1"; const consultaStatusId = "status-1"; const cleanedConsulta = removeEmptyColumns(removeEmptyRows(TabelaConsulta)); tableDataMap[consultaId] = JSON.parse(JSON.stringify(cleanedConsulta)); originalTableDataMap[consultaId] = JSON.parse(JSON.stringify(cleanedConsulta)); fileNameMap[consultaId] = "TabelaConsulta (do JSON)"; fileExtensionMap[consultaId] = ""; fileErrors[consultaId] = []; displayFileInfo(consultaId, fileNameMap[consultaId]); validateNoDoGrafico(consultaId, true); updateStatusIcon(consultaId, consultaStatusId); let currentResponseInputIndex = 2; for (const nomeOriginalArquivo in DemaisTabelas) { if (!Object.hasOwnProperty.call(DemaisTabelas, nomeOriginalArquivo)) continue; const data = DemaisTabelas[nomeOriginalArquivo]; if (!data || !Array.isArray(data) || data.length === 0) { continue; } const responseId = `file-upload-${currentResponseInputIndex}`; const responseStatusId = `status-${currentResponseInputIndex}`; const wrapperId = `wrapper-${currentResponseInputIndex}`; let wrapper = document.getElementById(wrapperId); if (!wrapper && currentResponseInputIndex > 2) { document.getElementById("add-response-btn").click(); wrapper = document.getElementById(wrapperId); } else if (!wrapper && currentResponseInputIndex === 2) wrapper = document.getElementById('wrapper-2'); if (!wrapper) { fileErrors[responseId] = ["Falha na interface"]; continue; } const cleanedData = removeEmptyColumns(removeEmptyRows(data)); tableDataMap[responseId] = JSON.parse(JSON.stringify(cleanedData)); originalTableDataMap[responseId] = JSON.parse(JSON.stringify(cleanedData)); const baseName = nomeOriginalArquivo.replace(/\.(xlsx?|csv)$/i, ""); const extension = nomeOriginalArquivo.substring(nomeOriginalArquivo.lastIndexOf('.')) || ""; fileNameMap[responseId] = nomeOriginalArquivo; fileExtensionMap[responseId] = extension; fileErrors[responseId] = []; displayFileInfo(responseId, nomeOriginalArquivo); const renameInput = wrapper.querySelector(".rename-input"); if (renameInput) renameInput.value = baseName; updateStatusIcon(responseId, responseStatusId); currentResponseInputIndex++; } loadedChartConfigs = configs || {}; if (loadedSchoolInfo && typeof loadedSchoolInfo === 'object') { schoolInfoData = { name: loadedSchoolInfo.name || '', city: loadedSchoolInfo.city || '', state: loadedSchoolInfo.state || '', responsible: loadedSchoolInfo.responsible || '' }; try { localStorage.setItem("schoolInfo", JSON.stringify(schoolInfoData)); } catch (e) {} document.getElementById('school-name').value = schoolInfoData.name; document.getElementById('school-city').value = schoolInfoData.city; document.getElementById('school-state').value = schoolInfoData.state; document.getElementById('school-responsible').value = schoolInfoData.responsible; } attachViewButtonListener('view-1', 'file-upload-1', 0); let finalIdx = 2; for (const nome in DemaisTabelas) { if (Object.hasOwnProperty.call(DemaisTabelas, nome) && DemaisTabelas[nome]?.length > 0) { const vBtnId = `view-${finalIdx}`; if (document.getElementById(vBtnId)) { attachViewButtonListener(vBtnId, `file-upload-${finalIdx}`, finalIdx - 1); } finalIdx++; } } document.querySelectorAll('.file-input-wrapper .btn-view').forEach(btn => btn.disabled = false); fileErrors[fileUploadId] = []; updateStatusIcon(fileUploadId, statusId); alert("Arquivo completo carregado e processado com sucesso!"); document.querySelectorAll('input[type="file"]:not(#file-upload-complete)').forEach(inp => inp.disabled = true); document.querySelectorAll('.file-input-wrapper:not(#wrapper-complete) label.file-input-label').forEach(lbl => lbl.style.cursor = 'not-allowed'); document.querySelectorAll('.file-input-wrapper:not(#wrapper-complete) .rename-input').forEach(inp => inp.disabled = true); document.getElementById("add-response-btn").disabled = true; } catch (error) { alert(`Erro ao processar JSON: ${error.message}`); fileErrors[fileUploadId] = ["Erro ao processar JSON", error.message]; updateStatusIcon(fileUploadId, statusId); tableDataMap = {}; originalTableDataMap = {}; fileNameMap = {}; fileErrors = { "file-upload-1": [] }; loadedChartConfigs = null; schoolInfoData = null; localStorage.removeItem("schoolInfo"); document.querySelectorAll('input[type="file"], .rename-input, .btn-view, #add-response-btn').forEach(el => el.disabled = false); document.querySelectorAll('.file-input-wrapper label.file-input-label').forEach(lbl => lbl.style.cursor = 'pointer'); document.getElementById('responses-container').innerHTML = ''; responseIndex = 3; displayFileInfo('file-upload-1', null); updateStatusIcon('file-upload-1', 'status-1'); displayFileInfo('file-upload-2', null); updateStatusIcon('file-upload-2', 'status-2'); const renameResp2 = document.querySelector('#wrapper-2 .rename-input'); if(renameResp2) renameResp2.value = 'Estudantes'; document.getElementById('school-name').value = ''; document.getElementById('school-city').value = ''; document.getElementById('school-state').value = ''; document.getElementById('school-responsible').value = ''; } finally { const fileInputComplete = document.getElementById(fileUploadId); if(fileInputComplete) fileInputComplete.value = ""; if(fileErrors[fileUploadId]?.length > 0) displayFileInfo(fileUploadId, null); } };
@@ -232,11 +256,10 @@ function validateNoDoGrafico(fileUploadId, suppressAlert = false) {
 
 // ------------------------ Validação Geral e Continuação (vFinal 2 - Valida Ambos Formatos, Sem Transformação) --- //
 
-/** Extrai IDs [d.d.d[a]] OU [d.d[a]] do cabeçalho das respostas */
+/* Extrai IDs [d.d.d[a]] OU [d.d[a]] do cabeçalho das respostas */
 function extractIdentifiersFromResponseHeader(headerRow) {
     if (!Array.isArray(headerRow)) return [];
     const identifiers = new Set();
-    // Regex MODIFICADA para capturar ambos os formatos (d.d.d[a] ou d.d[a])
     const idRegex = /\[(\d+\.\d+(?:\.\d+)?[a-zA-Z]?)\]\s*$/;
     headerRow.forEach(header => {
         if (typeof header === 'string') {
@@ -244,11 +267,9 @@ function extractIdentifiersFromResponseHeader(headerRow) {
             if (match?.[1]) { identifiers.add(match[1]); }
         }
     });
-    // console.log("IDs extraídos das respostas:", Array.from(identifiers));
     return Array.from(identifiers);
 }
 
-/** Valida tudo antes de ir para visualizacao.html */
 function validateBeforeContinue() {
     let errors = []; let warnings = [];
 
@@ -267,24 +288,22 @@ function validateBeforeContinue() {
     }
 
     // 3. Respostas e Referência
-    const responseIdentifiers = new Set(); // Pode conter ambos os formatos
+    const responseIdentifiers = new Set(); 
     const responseIdentifierSources = new Map(); let respostaValidaCount = 0; const demaisTabelasParaSalvar = {};
     for (const key in tableDataMap) { if (key === consultaFileId || key === "file-upload-complete") continue; const respData = tableDataMap[key]; const respFileName = fileNameMap[key] || `Arquivo ${key}`; if (!respData || respData.length <= 1) { warnings.push(`Arquivo Respostas (${respFileName}) parece vazio.`); continue; } const internalErrors = (fileErrors[key] || []).filter(e => !e.includes("Referência")); if (internalErrors.length > 0) { errors.push(`Arquivo Respostas (${respFileName}) contém erros: ${internalErrors.join(", ")}`); continue; } const header = respData[0];
-        const idsInFile = extractIdentifiersFromResponseHeader(header); // Pega ambos formatos
+        const idsInFile = extractIdentifiersFromResponseHeader(header); 
         if (idsInFile.length === 0) warnings.push(`Arquivo Respostas (${respFileName}) sem colunas [ID] no cabeçalho (formato d.d[a] ou d.d.d[a]).`);
         idsInFile.forEach(id => { responseIdentifiers.add(id); if (!responseIdentifierSources.has(id)) responseIdentifierSources.set(id, []); if (!responseIdentifierSources.get(id).includes(respFileName)) responseIdentifierSources.get(id).push(respFileName); });
         respostaValidaCount++; demaisTabelasParaSalvar[respFileName] = respData;
     }
     if (respostaValidaCount === 0 && !errors.some(e => e.includes("Nenhum arquivo de respostas"))) errors.push("Nenhum arquivo de respostas válido carregado.");
 
-    // 4. Validação Cruzada (SIMPLIFICADA - verifica apenas existência direta)
     if (consultaIdentifiers.size > 0 && respostaValidaCount > 0) {
         const profileIds = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8'];
 
         // Consulta -> Respostas
         consultaIdentifiers.forEach(idConsulta => {
-            if (profileIds.includes(idConsulta)) return; // Pula Perfil
-            // Verifica se o ID da consulta (curto ou longo) existe EXATAMENTE como está nos IDs das respostas
+            if (profileIds.includes(idConsulta)) return; 
             if (!responseIdentifiers.has(idConsulta)) {
                 errors.push(`Erro Ref: ID Consulta '${idConsulta}' não possui correspondência exata [${idConsulta}] nas Respostas.`);
             }
@@ -292,7 +311,6 @@ function validateBeforeContinue() {
 
         // Respostas -> Consulta
         responseIdentifiers.forEach(idResposta => {
-            // Verifica se o ID da resposta (curto ou longo) existe EXATAMENTE como está nos IDs da consulta
             if (!consultaIdentifiers.has(idResposta)) {
                 const sources = responseIdentifierSources.get(idResposta)?.join(', ') || '?';
                 errors.push(`Erro Ref: Coluna Resposta '[${idResposta}]' (Arq: ${sources}) não encontrada na Consulta.`);
@@ -300,7 +318,6 @@ function validateBeforeContinue() {
         });
     }
 
-    // 5. Reportar ou Continuar (SEM TRANSFORMAÇÃO)
     if (errors.length > 0) {
         alert(`Problemas encontrados:\n\n- ${errors.join("\n- ")}\n\n${warnings.length > 0 ? 'Avisos:\n- ' + warnings.join('\n- ') : ''}\n\nCorrija os problemas.`);
         return false;
@@ -309,11 +326,8 @@ function validateBeforeContinue() {
             return false;
         }
 
-        // ***** NENHUMA TRANSFORMAÇÃO AQUI *****
-
-        // Usa a tabela ORIGINAL da consulta para salvar
         const finalData = {
-            "TabelaConsulta": consultaData, // <<< USA A VERSÃO ORIGINAL
+            "TabelaConsulta": consultaData, 
             "DemaisTabelas": demaisTabelasParaSalvar
          };
 
@@ -323,7 +337,7 @@ function validateBeforeContinue() {
              else { localStorage.removeItem("loadedChartConfigs"); }
              schoolInfoData = { name: schoolName, city: schoolCity, state: schoolState, responsible: schoolResponsible };
              localStorage.setItem("schoolInfo", JSON.stringify(schoolInfoData));
-             console.log("Dados validados e salvos (sem transformação de ID)."); // Mensagem atualizada
+             console.log("Dados validados e salvos (sem transformação de ID)."); 
              window.location.href = "visualizacao.html";
              return true;
         } catch (error) {

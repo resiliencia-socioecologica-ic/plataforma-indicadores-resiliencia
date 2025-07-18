@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Canvas não utilizado diretamente, mas pode manter se quiser -->
     <canvas id="chartCanvas" style="display: none; width: 10%; max-width: 800px; height: 40px;"></canvas>
 
     <div class="container">
@@ -26,13 +25,12 @@
         <div id="tutorial-modal" class="modal-overlay tutorial-modal-overlay" style="display: none;">
             <div class="modal-content tutorial-modal-content">
                 <div class="modal-header">
-                    <h2 id="tutorial-video-title">Tutorial Gráficos</h2> <!-- Título dinâmico -->
+                    <h2 id="tutorial-video-title">Tutorial Gráficos</h2> 
                     <button id="close-tutorial-modal" class="btn-close"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="modal-body tutorial-video-body">
                     <div class="video-player-container">
                         <video id="tutorial-video-player" width="100%" controls controlsList="nodownload">
-                            <!-- O source do vídeo será definido via JavaScript -->
                             Seu navegador não suporta o elemento de vídeo.
                         </video>
                     </div>
@@ -44,34 +42,29 @@
             </div>
         </div>
 
-        <!-- Container para Tabela de Informações (sem mudanças) -->
+        <!-- Container para Tabela de Informações -->
         <div id="info-summary-table-container">
-            <!-- Tabela será inserida aqui via JavaScript -->
         </div>
 
-        <!-- Subtítulo para a seção de perfil -->
         <h2 class="profile-section-title" id="profile-section-title">Perfil dos Grupos</h2>
         <!-- Container onde os gráficos de pizza de perfil serão inseridos -->
         <div class="profile-charts-container" id="profile-charts-container">
-            <!-- Gráficos de Pizza serão inseridos aqui via main-init.js -->
         </div>
 
-        <!-- Container para os botões de filtro de dimensão (sem mudanças) -->
+        <!-- Container para os botões de filtro de dimensão -->
         <div class="filter-buttons-container" id="dimension-filters">
-            <!-- Botões serão inseridos aqui via JavaScript -->
         </div>
 
-        <!-- Elemento para exibir o título da dimensão selecionada (sem mudanças) -->
+        <!-- Elemento para exibir o título da dimensão selecionada-->
         <h2 class="dimension-title-display" id="dimension-title">Todas as Dimensões</h2>
 
-        <!-- Grid principal para os outros gráficos/tabelas (sem mudanças) -->
+        <!-- Grid principal para os outros gráficos/tabelas -->
         <div class="grid-container">
-            <!-- Squares para Barra, Teia, Quadro Respostas, TeiaPair serão inseridos aqui via main-init.js -->
         </div>
 
-    </div> <!-- Fim .container -->
+    </div> 
 
-    <!-- Sidebar com botões de download (sem mudanças) -->
+    <!-- Sidebar com botões de download -->
     <div id="download-sidebar" class="sidebar closed">
         <button id="close-download-sidebar-btn" class="sidebar-close-btn" title="Fechar">×</button>
         <h2>Opções de Download</h2>
@@ -85,29 +78,27 @@
         <p class="download-note">O Arquivo Único inclui todas as planilhas e configurações atuais dos gráficos.</p>
    </div>
 
-    <!-- Link para voltar à página inicial (sem mudanças) -->
+    <!-- Link para voltar à página inicial -->
     <a href="upload_page.html" class="back-btn">Voltar</a>
 
-    <!-- Adicionando jsPDF e html2canvas (sem mudanças) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Biblioteca para manipulação de arquivos Excel e CSV (sem mudanças) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
     <script src="help-tooltips.js"></script>
-    <script src="script.js"></script> <!-- Processa os dados -->
+    <script src="script.js"></script> 
     <script src="charts-scripts/shared-utils.js"></script>
     <script src="charts-scripts/perguntas-table.js"></script>
     <script src="charts-scripts/bar-chart.js"></script>
     <script src="charts-scripts/radar-chart.js"></script>
     <script src="charts-scripts/response-table.js"></script>
     <script src="charts-scripts/pie-chart.js"></script> 
-    <script src="charts-scripts/main-init.js"></script> <!-- Cria os squares e inicializa os gráficos -->
+    <script src="charts-scripts/main-init.js"></script> 
     <script src="download-handler.js"></script>
 
-    <!-- Rodapé (sem mudanças) -->
+    <!-- Rodapé -->
     <footer>
         <p>
             <strong>Contatos:</strong><br>
@@ -115,7 +106,6 @@
             Responsável pelo desenvolvimento dos indicadores: Dra. Maria Paula Pires de Oliveira - <a href="mailto:mariapaulap.oliveira@gmail.com">mariapaulap.oliveira@gmail.com</a>
         </p>
     </footer>
-    <!-- Fim Rodapé -->
 
 </body>
 </html>

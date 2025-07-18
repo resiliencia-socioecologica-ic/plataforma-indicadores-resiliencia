@@ -1,4 +1,3 @@
-/* Reset Básico e Globais */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,42 +6,42 @@
 
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: #f8f9fa; /* Fundo cinza bem claro */
-    color: #343a40; /* Cor de texto principal */
+    background-color: #f8f9fa;
+    color: #343a40;
     line-height: 1.6;
-    padding-bottom: 80px; /* Espaço para o rodapé fixo */
+    padding-bottom: 80px;
 }
 
 .container {
-    max-width: 900px; /* Largura máxima */
-    margin: 30px auto; /* Centraliza e adiciona margem */
+    max-width: 900px;
+    margin: 30px auto;
     padding: 20px;
 }
 
 h1 {
     text-align: center;
-    color: #0056b3; /* Azul mais escuro para o título principal */
+    color: #0056b3;
     margin-bottom: 30px;
     font-weight: 600;
 }
 
 h2 {
-     color: #007bff; /* Azul primário */
+     color: #007bff; 
      margin-bottom: 15px;
      font-size: 1.4em;
      font-weight: 500;
      display: flex;
      align-items: center;
-     gap: 8px; /* Espaço entre ícone e texto */
+     gap: 8px; 
 }
 
 h3 {
-    color: #495057; /* Cinza escuro */
+    color: #495057;
     margin-bottom: 15px;
     margin-top: 20px;
     font-size: 1.2em;
     font-weight: 500;
-    border-bottom: 1px solid #e9ecef; /* Linha sutil abaixo */
+    border-bottom: 1px solid #e9ecef; 
     padding-bottom: 8px;
     display: flex;
     align-items: center;
@@ -65,38 +64,36 @@ hr.section-divider {
     margin: 30px 0;
 }
 
-/* Cards / Painéis */
 .card {
-    background-color: #ffffff; /* Fundo branco */
-    border: 1px solid #dee2e6; /* Borda cinza clara */
-    border-radius: 8px; /* Bordas arredondadas */
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
     margin-bottom: 30px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra sutil */
-    overflow: hidden; /* Garante que o conteúdo não vaze */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
 .card-header {
-    background-color: #f8f9fa; /* Fundo levemente acinzentado */
+    background-color: #f8f9fa;
     padding: 15px 20px;
     border-bottom: 1px solid #dee2e6;
 }
 .card-header h2 {
-    margin-bottom: 0; /* Remove margem do h2 no header */
+    margin-bottom: 0;
 }
 
 .card-body {
     padding: 20px;
 }
 
-/* Estilos de Formulário */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsivo */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: 20px;
 }
 
 .form-group {
-    margin-bottom: 0; /* Removido, o gap do grid controla */
+    margin-bottom: 0; 
 }
 
 .form-group label {
@@ -123,7 +120,7 @@ hr.section-divider {
 
 .form-text {
     font-size: 0.875em;
-    color: #6c757d; /* Cinza mais claro */
+    color: #6c757d; 
 }
 
 .form-actions {
@@ -131,11 +128,10 @@ hr.section-divider {
     margin-top: 30px;
 }
 
-/* Novo Componente de Input de Arquivo */
 .file-input-container {
     margin-bottom: 20px;
 }
-.file-input-container > label { /* Label principal (ex: Tabela Consulta) */
+.file-input-container > label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
@@ -152,21 +148,20 @@ hr.section-divider {
     gap: 10px;
     transition: border-color 0.2s ease;
 }
-.file-input-wrapper:has(input[type="file"]:focus) { /* Estilo quando o input (escondido) tem foco */
+.file-input-wrapper:has(input[type="file"]:focus) { 
      border-color: #80bdff;
      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 
 .file-input-wrapper input[type="file"] {
-    display: none; /* Esconde o input real */
+    display: none; 
 }
 
 .file-input-label {
-    /* flex-grow: 1; */ /* REMOVIDO - para não esticar demais */
-    flex-shrink: 0;   /* Adicionado - impede que encolha demais */
+    flex-shrink: 0;   
     padding: 8px 10px;
-    background-color: #e9ecef; /* Fundo cinza claro para o label clicável */
+    background-color: #e9ecef; 
     border-radius: 3px;
     cursor: pointer;
     display: flex;
@@ -174,14 +169,14 @@ hr.section-divider {
     gap: 8px;
     color: #495057;
     transition: background-color 0.2s ease;
-    overflow: hidden; /* Para o text-overflow */
+    overflow: hidden; 
     white-space: nowrap;
 }
 .file-input-label:hover {
     background-color: #dee2e6;
 }
 .file-input-label i {
-    color: #007bff; /* Ícone em azul */
+    color: #007bff;
 }
 .file-input-label .file-name {
     text-overflow: ellipsis;
@@ -191,14 +186,13 @@ hr.section-divider {
 }
 
 .file-input-wrapper .rename-input {
-    flex-grow: 1; /* Adicionado - faz o input de nome ocupar espaço restante */
-    min-width: 150px; /* Largura mínima */
+    flex-grow: 1; 
+    min-width: 150px; 
     padding: 8px 10px;
     border: 1px solid #ced4da;
     border-radius: 3px;
     font-size: 0.9em;
     background-color: #fff;
-    /* flex-shrink: 0; */ /* Removido - deixa ele crescer */
 }
 .file-input-wrapper .rename-input:focus {
      border-color: #80bdff;
@@ -210,18 +204,18 @@ hr.section-divider {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0; /* Não encolhe */
+    flex-shrink: 0; 
 }
 
 .upload-status {
     font-size: 1.1em;
-    width: 20px; /* Largura fixa */
+    width: 20px; 
     text-align: center;
-    line-height: 1; /* Garante alinhamento do ícone */
+    line-height: 1; 
 }
-.upload-status.success i { color: #28a745; } /* Verde */
-.upload-status.error i { color: #dc3545; } /* Vermelho */
-.upload-status.loading i { color: #007bff; animation: spin 1s linear infinite; } /* Azul, girando */
+.upload-status.success i { color: #28a745; }
+.upload-status.error i { color: #dc3545; } 
+.upload-status.loading i { color: #007bff; animation: spin 1s linear infinite; } 
 
 @keyframes spin {
   from { transform: rotate(0deg); }
@@ -240,7 +234,6 @@ hr.section-divider {
     margin-right: 3px;
 }
 
-/* Botões */
 .btn {
     display: inline-block;
     font-weight: 500;
@@ -250,7 +243,7 @@ hr.section-divider {
     user-select: none;
     background-color: transparent;
     border: 1px solid transparent;
-    padding: 0.5rem 1rem; /* Padding padrão */
+    padding: 0.5rem 1rem; 
     font-size: 1rem;
     line-height: 1.5;
     border-radius: 0.25rem;
@@ -273,7 +266,7 @@ hr.section-divider {
 
 .btn-secondary {
     color: #fff;
-    background-color: #6c757d; /* Cinza */
+    background-color: #6c757d; 
     border-color: #6c757d;
 }
 .btn-secondary:hover {
@@ -283,7 +276,7 @@ hr.section-divider {
 
  .btn-success {
     color: #fff;
-    background-color: #28a745; /* Verde */
+    background-color: #28a745; 
     border-color: #28a745;
 }
 .btn-success:hover {
@@ -293,7 +286,7 @@ hr.section-divider {
 
 .btn-danger {
     color: #fff;
-    background-color: #dc3545; /* Vermelho */
+    background-color: #dc3545; 
     border-color: #dc3545;
 }
 .btn-danger:hover {
@@ -303,7 +296,7 @@ hr.section-divider {
 
 .btn-warning {
     color: #212529;
-    background-color: #ffc107; /* Amarelo */
+    background-color: #ffc107; 
     border-color: #ffc107;
 }
 .btn-warning:hover {
@@ -319,7 +312,7 @@ hr.section-divider {
 .btn-icon {
     background: none;
     border: none;
-    color: #6c757d; /* Cinza para ícones de ação */
+    color: #6c757d; 
     padding: 5px;
     font-size: 1.1em;
     line-height: 1;
@@ -330,35 +323,31 @@ hr.section-divider {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out; /* Add color transition */
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 .btn-icon:hover {
     background-color: #e9ecef;
     color: #0056b3;
 }
-/* Específico para botão de remover resposta */
 .btn-remove-response i {
-    color: #dc3545; /* Cor vermelha para o 'X' */
+    color: #dc3545; 
 }
 .btn-remove-response:hover {
-    background-color: #f8d7da; /* Fundo vermelho claro no hover */
+    background-color: #f8d7da; 
 }
 .btn-remove-response:hover i {
-    color: #a51826; /* Cor vermelha escura no hover */
+    color: #a51826; 
 }
 
 
 .btn-add {
     margin-top: 15px;
-    display: block; /* Garante que margens funcionem */
-    width: fit-content; /* Largura baseada no conteúdo */
-    margin-left: 0; /* Alinha à esquerda por padrão */
-    /* Para centralizar, descomente abaixo e comente o margin-left: 0 */
-    /* margin-left: auto; */
-    /* margin-right: auto; */
+    display: block; 
+    width: fit-content; 
+    margin-left: 0; 
 }
 
-.btn-close { /* Botão de fechar modal */
+.btn-close { 
      background: none;
      border: none;
      font-size: 1.5rem;
@@ -372,14 +361,12 @@ hr.section-divider {
     color: #000;
 }
 
-/* Modal */
 .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* Fundo mais escuro */
+    background: rgba(0, 0, 0, 0.6); 
     z-index: 1400;
-    /* Animação de fade */
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -390,9 +377,7 @@ hr.section-divider {
     transition-delay: 0s;
 }
 
-/* Modal */
 .modal {
-    /* display: none; */ /* REMOVA display: none daqui se estava aqui */
     position: fixed;
     top: 50%;
     left: 50%;
@@ -404,21 +389,19 @@ hr.section-divider {
     width: 90%;
     max-width: 900px;
     max-height: 90vh;
-    display: flex; /* Mantém flex para layout interno */
+    display: flex; 
     flex-direction: column;
-    /* --- ESTADO INICIAL/ESCONDIDO --- */
     opacity: 0;
-    visibility: hidden; /* Esconde e remove da acessibilidade/eventos */
-    pointer-events: none; /* Impede cliques/interações quando escondido */
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Atraso na transição de visibility */
+    visibility: hidden;
+    pointer-events: none; 
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; 
 }
-
 .modal.show {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    visibility: visible; /* Torna visível */
-    pointer-events: auto; /* Permite interações */
-    transition-delay: 0s; /* Remove atraso ao mostrar */
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
 }
 
 .modal-header {
@@ -427,7 +410,7 @@ hr.section-divider {
     align-items: center;
     padding: 15px 20px;
     border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa; /* Fundo do header */
+    background-color: #f8f9fa;
 }
 .modal-title {
     font-size: 1.25rem;
@@ -437,28 +420,27 @@ hr.section-divider {
 
 .modal-body {
     padding: 20px;
-    overflow-y: auto; /* Permite scroll se a tabela for muito grande */
+    overflow-y: auto;
     flex-grow: 1;
 }
 
 .modal-footer {
     display: flex;
-    justify-content: flex-end; /* Alinha botões à direita */
+    justify-content: flex-end;
     gap: 10px;
     padding: 15px 20px;
     border-top: 1px solid #dee2e6;
     background-color: #f8f9fa;
 }
 
-/* Estilo Tabela Dentro do Modal */
 .table-container {
-    max-height: 65vh; /* Altura máxima controlada no body */
+    max-height: 65vh;
     overflow: auto;
     border: 1px solid #dee2e6;
     border-radius: 4px;
 }
 
-#table-content { /* ID da tabela foi mudado no HTML */
+#table-content {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9em;
@@ -466,105 +448,93 @@ hr.section-divider {
 
 #table-content th,
 #table-content td {
-    border: 1px solid #e0e0e0; /* Borda mais sutil */
+    border: 1px solid #e0e0e0;
     text-align: left;
-    vertical-align: top; /* Alinha no topo para edição longa */
+    vertical-align: top;
 }
 
-/* Ajuste para células de dados (permitir edição e ellipsis) */
 #table-content td {
-    padding: 8px 10px; /* Mais padding */
-    max-width: 250px; /* Limita largura e aplica ellipsis */
+    padding: 8px 10px;
+    max-width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-#table-content td:not(:first-child) { /* Permite edição em todas exceto a primeira (lixeira de linha) */
-     cursor: pointer;
+#table-content td:not(:first-child) {
+    cursor: pointer;
 }
 
-
-/* --- FIX Cabeçalho da Tabela (TH) --- */
 #table-content th {
-    background-color: #e9ecef; /* Fundo do cabeçalho */
+    background-color: #e9ecef;
     font-weight: 600;
-    position: sticky; /* Cabeçalho fixo */
+    position: sticky;
     top: 0;
     z-index: 1;
-    border-bottom: 1px solid #dee2e6; /* Linha inferior mais forte */
-    padding: 0; /* Removido padding direto */
+    border-bottom: 1px solid #dee2e6;
+    padding: 0;
     text-align: left;
-    vertical-align: middle; /* Alinha conteúdo do flex verticalmente */
+    vertical-align: middle;
 }
 
-/* Wrapper Flex dentro do TH para separar texto e botão */
 .th-content-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Empurra botão para a direita */
-    padding: 8px 10px; /* Padding aplicado aqui */
+    justify-content: space-between;
+    padding: 8px 10px;
     width: 100%;
     overflow: hidden;
 }
 
-/* Span para o texto do cabeçalho com ellipsis */
 .th-text {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    flex-grow: 1; /* Permite crescer */
-    margin-right: 5px; /* Espaço antes do botão */
+    flex-grow: 1;
+    margin-right: 5px;
 }
 
-/* Botão de remover coluna dentro do TH */
 #table-content th .remove-btn {
     cursor: pointer;
     font-size: 0.9em;
     color: #dc3545;
     opacity: 0.6;
     transition: opacity 0.2s;
-    flex-shrink: 0; /* Não encolhe */
-    padding: 2px 4px; /* Área de clique */
-    line-height: 1; /* Ajuste para ícone FA */
+    flex-shrink: 0;
+    padding: 2px 4px;
+    line-height: 1;
 }
 #table-content th:hover .remove-btn {
     opacity: 1;
 }
-/* --- FIM FIX Cabeçalho --- */
-
 
 #table-content tr:nth-child(even) {
-    background-color: #f8f9fa; /* Zebra stripes */
+    background-color: #f8f9fa;
 }
 #table-content tr:hover {
-    background-color: #e2e6ea; /* Hover sutil */
+    background-color: #e2e6ea;
 }
 
-
-/* Coluna da lixeira de linha (TD e TH) */
 #table-content td:first-child,
 #table-content th:first-child {
     text-align: center;
-    vertical-align: middle; /* Centraliza lixeira */
+    vertical-align: middle;
     width: 45px;
     max-width: 45px;
     cursor: default;
     white-space: normal;
     overflow: visible;
-    padding: 8px 5px !important; /* Garante padding e sobrescreve th geral */
+    padding: 8px 5px !important;
 }
-#table-content td:first-child .btn-icon { /* Lixeira da linha */
-     color: #dc3545;
-     width: auto; /* Ajusta tamanho ao ícone */
-     height: auto;
+#table-content td:first-child .btn-icon {
+    color: #dc3545;
+    width: auto;
+    height: auto;
 }
 #table-content td:first-child .btn-icon:hover {
-     color: #a51826;
-     background-color: #f8d7da;
+    color: #a51826;
+    background-color: #f8d7da;
 }
 
-
-/* Textarea de edição */
 #table-content textarea {
     width: 100%;
     box-sizing: border-box;
@@ -576,18 +546,16 @@ hr.section-divider {
     font-family: inherit;
     font-size: inherit;
     outline: none;
-    display: block; /* Garante que ocupe a linha toda */
+    display: block;
 }
-/* Célula durante a edição */
 #table-content td.editing {
-     background-color: #fff !important; /* Fundo branco para destacar, !important sobrepõe hover/zebra */
-     overflow: visible; /* Permite textarea crescer */
-     white-space: normal;
-     cursor: text; /* Muda cursor durante edição */
-     max-width: none; /* Remove limite de largura durante edição */
+    background-color: #fff !important;
+    overflow: visible;
+    white-space: normal;
+    cursor: text;
+    max-width: none;
 }
 
-/* Rodapé */
 footer {
     position: fixed;
     bottom: 0;
@@ -606,43 +574,42 @@ footer p { margin: 0; }
 footer strong { color: #495057; }
 footer a { color: #0056b3; }
 
-/* Ícones de Ajuda e Tooltips (Mantido do seu original, mas com ícone FA) */
 .help-icon {
-     display: inline-flex; /* Usar flex para alinhar ícone interno */
-     align-items: center;
-     justify-content: center;
-     width: 18px;
-     height: 18px;
-     border-radius: 50%;
-     background-color: #6c757d; /* Cinza mais neutro */
-     color: white;
-     font-size: 12px; /* Tamanho do ícone FA */
-     cursor: help;
-     margin-left: 5px;
-     vertical-align: middle;
-     user-select: none;
-     transition: background-color 0.2s;
- }
- .help-icon:hover {
-     background-color: #5a6268;
- }
- .help-icon i { /* Remove margem do ícone FA se houver */
-     margin-right: 0;
-     font-size: 1em; /* Garante tamanho correto do ícone interno */
-     line-height: 1; /* Garante alinhamento */
- }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    font-size: 12px;
+    cursor: help;
+    margin-left: 5px;
+    vertical-align: middle;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+.help-icon:hover {
+    background-color: #5a6268;
+}
+.help-icon i {
+    margin-right: 0;
+    font-size: 1em;
+    line-height: 1;
+}
 
 .help-tooltip {
-     position: absolute;
-     background-color: #343a40; /* Cinza escuro */
-     color: #fff;
-     padding: 8px 12px;
-     border-radius: 4px;
-     font-size: 0.85em;
-     max-width: 250px;
-     opacity: 0;
-     transition: opacity 0.2s ease-in-out;
-     z-index: 1500 !important;
-     pointer-events: none;
-     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: absolute;
+    background-color: #343a40;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    max-width: 250px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 1500 !important;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }

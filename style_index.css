@@ -2,7 +2,7 @@
 
 body {
     padding-bottom: 80px;
-    position: relative; /* Necessário se o back-btn for absolute em relação ao body */
+    position: relative; 
 }
 
 .intro-container {
@@ -11,26 +11,25 @@ body {
     padding-bottom: 20px;
 }
 
-/* --- Botão Voltar --- (Estilo da sua página de resultados) */
 .back-btn {
-    position: fixed; /* Fixo na tela */
+    position: fixed; 
     top: 20px;
     left: 20px;
     background-color: #6c757d;
     border: 1px solid #6c757d;
     color: #ffffff;
-    padding: 10px 20px; /* Padding original */
+    padding: 10px 20px; 
     cursor: pointer;
-    font-size: 16px; /* Tamanho da fonte original */
+    font-size: 16px;
     transition: background-color 0.3s, border-color 0.3s;
     text-decoration: none;
     border-radius: 4px;
-    z-index: 1000; /* Para ficar acima de outro conteúdo */
-    display: flex; /* Para alinhar ícone e texto */
-    align-items: center; /* Alinha verticalmente */
+    z-index: 1000; 
+    display: flex; 
+    align-items: center; 
 }
 .back-btn i {
-    margin-right: 8px; /* Espaço entre o ícone e o texto */
+    margin-right: 8px; 
 }
 
 .back-btn:hover {
@@ -63,13 +62,6 @@ body {
     border: 1px solid #e9ecef;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
-
-/* Estilo para a seção de materiais quando visível, para não ser cortada pelo botão voltar */
-/* A alternativa é adicionar padding-top ao container dela, como fiz no HTML inline */
-/* #material-view-content .intro-container {
-    padding-top: 70px; 
-} */
-
 
 .content-section h2 {
     font-size: 1.5em;
@@ -112,21 +104,21 @@ body {
 }
 
 .image-display-container {
-    text-align: center; /* Centraliza a imagem se ela for menor que o container */
-    margin-top: 15px; /* Espaço acima da imagem */
-    margin-bottom: 15px; /* Espaço abaixo da imagem */
-    padding: 10px; /* Opcional: um pequeno padding ao redor da imagem */
-    background-color: #f8f9fa; /* Opcional: um fundo sutil, se desejar */
-    border: 1px solid #e9ecef; /* Opcional: uma borda sutil */
-    border-radius: 6px; /* Opcional: bordas arredondadas */
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
 }
 
 .image-display-container img {
-    max-width: 100%; /* Garante que a imagem seja responsiva e não ultrapasse o container */
-    height: auto;    /* Mantém a proporção da imagem */
-    border-radius: 4px; /* Opcional: bordas arredondadas para a própria imagem */
-    display: block; /* Remove espaço extra abaixo da imagem se for inline */
-    margin-left: auto; /* Centraliza a imagem se ela for menor que o container */
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    display: block;
+    margin-left: auto;
     margin-right: auto;
 }
 
@@ -218,8 +210,7 @@ hr.section-divider {
     border-left: 4px solid #6c757d;
 }
 
-/* Styles for the integrated "PÁGINA 2" content (Material View) */
-#material-view-content .content-section h2 { /* Specific title styling for this view if needed */
+#material-view-content .content-section h2 { 
     color: #28a745; 
     border-bottom-color: #28a745;
 }
@@ -254,7 +245,6 @@ hr.section-divider {
     display: inline-block;
     width: fit-content;
     margin-top: 5px;
-    /* Assuming btn-secondary is defined in style.css */
 }
 .btn-download-material i {
     margin-right: 6px;
@@ -354,30 +344,30 @@ footer a { color: #0056b3; }
 
 
 .form-duplication-guide {
-    background-color: #e9f5ff; /* Um azul bem claro, similar ao da imagem de exemplo */
+    background-color: #e9f5ff;
     padding: 15px 20px;
-    margin-bottom: 20px; /* Espaço antes do próximo parágrafo */
+    margin-bottom: 20px;
     border-radius: 4px;
 }
 
 .form-duplication-guide .guide-intro {
     font-size: 0.95em;
-    color: #334; /* Cor um pouco mais escura para contraste */
+    color: #334;
     margin-bottom: 12px;
     line-height: 1.5;
 }
 
 .form-duplication-guide ol.guide-steps {
-    list-style: none; /* Remove os marcadores padrão da lista ordenada */
+    list-style: none;
     padding-left: 0;
     margin: 0;
 }
 
 .form-duplication-guide ol.guide-steps li {
-    display: flex; /* Alinha o número e o texto horizontalmente */
-    align-items: flex-start; /* Alinha no topo se o texto for longo */
+    display: flex;
+    align-items: flex-start;
     margin-bottom: 10px;
-    font-size: 0.9em; /* Tamanho do texto dos passos */
+    font-size: 0.9em;
     line-height: 1.6;
     color: #333;
 }
@@ -388,18 +378,17 @@ footer a { color: #0056b3; }
 
 .form-duplication-guide .step-number {
     font-weight: bold;
-    color: #0056b3; /* Cor azul para os números */
-    min-width: 25px; /* Garante espaço para o número e o ponto, ajusta se necessário */
-    margin-right: 8px; /* Espaço entre o número e o texto do passo */
-    flex-shrink: 0; /* Impede que o número seja espremido */
-    padding-top: 1px; /* Pequeno ajuste vertical para alinhar melhor com o texto */
+    color: #0056b3;
+    min-width: 25px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    padding-top: 1px;
 }
 
 .form-duplication-guide .step-text {
-    flex-grow: 1; /* Permite que o texto ocupe o espaço restante */
+    flex-grow: 1;
 }
 
-/* Ajuste para o parágrafo que vem depois da explicação */
-.material-card > p:nth-of-type(2) { /* Seleciona o <p> que vem após .form-duplication-guide */
-    margin-top: 0; /* Remove margem superior se houver, pois .form-duplication-guide já tem margin-bottom */
+.material-card > p:nth-of-type(2) {
+    margin-top: 0;
 }

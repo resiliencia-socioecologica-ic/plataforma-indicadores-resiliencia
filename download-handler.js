@@ -1,7 +1,15 @@
 /*
- * download-handler.js (v2 + Seção Perfil PDF v2 + Capa e Introdução Customizadas - CORREÇÕES CAPA v3)
- * Lógica para os botões de download na sidebar.
- * Inclui gráficos de perfil no PNG e na seção inicial do PDF Completo.
+ * Script: download-handler.js
+ *
+ * Objetivo: Gerenciar a exportação de dados e visualizações de um painel em três formatos de arquivo: JSON, PNG e PDF.
+ *
+ * Funcionamento:
+ * 1. Inicializa associando as funções de download aos respectivos botões na interface do usuário (JSON, PNG, PDF Completo, PDF por Dimensão).
+ * 2. Para o download JSON, o script coleta os dados brutos da aplicação, informações da escola e as configurações atuais dos gráficos, compilando tudo em um único arquivo .json.
+ * 3. Para o download PNG, ele utiliza a biblioteca html2canvas para capturar cada gráfico e tabela visível na página, salvando cada um como um arquivo de imagem .png individual.
+ * 4. A geração de PDF é a função mais complexa: utilizando jsPDF e html2canvas, o script constrói um relatório de múltiplas páginas.
+ * 5. O relatório PDF é montado em seções: uma capa customizada, uma introdução textual, gráficos de perfil dos participantes, os gráficos de indicadores com suas descrições, e uma página de referências.
+ * 6. O script oferece a opção de gerar o relatório PDF completo ou um relatório parcial, contendo apenas os dados e gráficos de uma dimensão específica escolhida pelo usuário.
  */
 
 const DownloadHandler = (() => {
@@ -287,10 +295,10 @@ const DownloadHandler = (() => {
 
         // --- Textos Estáticos para Descrições ---
         const dimensionDescriptions = {
-            "1": "Esta dimensão tem como objetivo compreender se as práticas escolares incentivam a proteção dos ecossistemas e a diversificação dos elementos da paisagem. Tais características são primordiais em sistemas socioecológicos resilientes visto que, por oferecem alternativas para lidar com a mudança, ajudam o sistema a sustentar sua identidade, funções e estruturas após distúrbios (BERGAMINI et al., 2013; PANPAKDEE; LIMNIRANKUL, 2018).",
-            "2": "Fomentar a biodiversidade agrícola ajuda a garantir uma diversidade de alimentos no caso de eventos extremos e aumenta as oportunidades de comercialização de produtos, aprovisionando a economia local. Além disso, a biodiversidade agrícola propicia a experimentação, a reorganização e a inovação nas comunidades, colabora com sua autonomia e fortalece a segurança e a soberania alimentar (FOLKE et al., 2005; PANPAKDEE; LIMNIRANKUL, 2018; UNU-IAS et al., 2014). Assim, a dimensão tem o objetivo de apreender se as práticas escolares afetam a produção agrícola das comunidades de forma a fortalecer sua resiliência socioecológica.",
-            "3": "O conhecimento, a aprendizagem e a inovação são recursos para desenvolver a resiliência socioecológica. A capacidade de aprender sobre as relações ecológicas e sociais que compõem um sistema colaboram para sua auto-organização, adaptação e transformação diante de distúrbios. Para aprender a conviver com mudanças e lidar com imprevistos e incertezas, algumas habilidades se fazem relevantes tais como abertura para o novo, flexibilidade, empenho contínuo por adquirir conhecimento e entusiasmo para experimentar intervenções para lidar com a situação (MERÇON, 2016; PANPAKDEE; LIMNIRANKUL, 2018; UNU-IAS et al., 2014).\nA dimensão tem o objetivo de compreender o efeito das práticas escolares na (auto)aprendizagem, na construção e trocas de conhecimento, na inovação e no saber lidar com mudanças e incertezas.",
-            "4": "A dimensão tem o objetivo de averiguar se, e de que maneira, as práticas escolares influenciam a auto-organização, a governança, a equidade social e o bem-estar da comunidade.\nA disponibilidade de infraestrutura eficiente e funcional e a garantia da equidade social são essenciais para atender às necessidades e anseios das comunidades e, assim, para sua resiliência. A desigualdade e a marginalização de determinados grupos e de seus conhecimentos e habilidades podem prejudicar sua capacidade de colaborar com o fortalecimento da comunidade (UNU-IAS et al., 2014).\nA capacidade da comunidade de se auto-organizar para encontrar soluções de enfrentamento a desafios, melhorar as relações sociais e consolidar conexões também são aspectos relevantes para a resiliência socioecológica. Por fim, o bem-estar da comunidade e a conservação da biodiversidade podem ser aprimorados com o engajamento – inclusivo, diverso e horizontal – de seus integrantes na governança do território, em espaços de tomada de decisão e de desenvolvimento de políticas públicas (BURGOS; MERTENS, 2022; KRASNY; ROTH, 2011; MENDONZA, 2016; MERÇON, 2016; PANPAKDEE; LIMNIRANKUL, 2018; UNU-IAS et al., 2014)."
+            "1": "Esta dimensão tem como objetivo compreender se as práticas escolares incentivam a proteção dos ecossistemas e a diversificação dos elementos da paisagem. Tais características são primordiais em sistemas socioecológicos resilientes visto que, por oferecem alternativas para lidar com a mudança, ajudam o sistema a sustentar sua identidade, funções e estruturas após distúrbios (Bergamini et al., 2013; Panpakdee; Limnirankul, 2018).",
+            "2": "Fomentar a biodiversidade agrícola ajuda a garantir uma diversidade de alimentos no caso de eventos extremos e aumenta as oportunidades de comercialização de produtos, aprovisionando a economia local. Além disso, a biodiversidade agrícola propicia a experimentação, a reorganização e a inovação nas comunidades, colabora com sua autonomia e fortalece a segurança e a soberania alimentar (Folke et al., 2005; Panpakdee; Limnirankul, 2018; Unu-ias et al., 2014). Assim, a dimensão tem o objetivo de apreender se as práticas escolares afetam a produção agrícola das comunidades de forma a fortalecer sua resiliência socioecológica.",
+            "3": "O conhecimento, a aprendizagem e a inovação são recursos para desenvolver a resiliência socioecológica. A capacidade de aprender sobre as relações ecológicas e sociais que compõem um sistema colaboram para sua auto-organização, adaptação e transformação diante de distúrbios. Para aprender a conviver com mudanças e lidar com imprevistos e incertezas, algumas habilidades se fazem relevantes tais como abertura para o novo, flexibilidade, empenho contínuo por adquirir conhecimento e entusiasmo para experimentar intervenções para lidar com a situação (Merçon, 2016; Panpakdee; Limnirankul, 2018; Unu-ias et al., 2014).\nA dimensão tem o objetivo de compreender o efeito das práticas escolares na (auto)aprendizagem, na construção e trocas de conhecimento, na inovação e no saber lidar com mudanças e incertezas.",
+            "4": "A dimensão tem o objetivo de averiguar se, e de que maneira, as práticas escolares influenciam a auto-organização, a governança, a equidade social e o bem-estar da comunidade.\nA disponibilidade de infraestrutura eficiente e funcional e a garantia da equidade social são essenciais para atender às necessidades e anseios das comunidades e, assim, para sua resiliência. A desigualdade e a marginalização de determinados grupos e de seus conhecimentos e habilidades podem prejudicar sua capacidade de colaborar com o fortalecimento da comunidade (Unu-ias et al., 2014).\nA capacidade da comunidade de se auto-organizar para encontrar soluções de enfrentamento a desafios, melhorar as relações sociais e consolidar conexões também são aspectos relevantes para a resiliência socioecológica. Por fim, o bem-estar da comunidade e a conservação da biodiversidade podem ser aprimorados com o engajamento – inclusivo, diverso e horizontal – de seus integrantes na governança do território, em espaços de tomada de decisão e de desenvolvimento de políticas públicas (Burgos; Mertens, 2022; Krasny; Roth, 2011; Mendoza, 2016; Merçon, 2016; Panpakdee; Limnirankul, 2018; Unu-ias et al., 2014)."
         };
         const indicatorDescriptions = {
             "1.1": "Para que as pessoas possam promover a resiliência de um sistema socioecológico quanto à diversidade da paisagem e proteção de ecossistemas, é importante que possam identificar as características e os diferentes elementos que o compõem, sua heterogeneidade e multifuncionalidade, assim como seu estado de conservação.\nO indicador ajuda a identificar se as práticas escolares contribuem para o aprimoramento de habilidades de reconhecimento da paisagem.",
@@ -394,7 +402,7 @@ const DownloadHandler = (() => {
             return y + textBlockHeight + spaceAfter;
         };
 
-        // --- Nova Capa ---
+        // --- Capa ---
         try {
             console.log("Gerando Capa...");
             let schoolInfo = { name: '[nome escola]', city: '[município]', state: '[estado]', responsible: '[nome do responsável]' };
@@ -432,22 +440,19 @@ const DownloadHandler = (() => {
             const indentAmount = pdf.getStringUnitWidth(PARAGRAPH_INDENT) * FONT_FOOTER_CAPA / pdf.internal.scaleFactor;
 
 
-            // Adiciona a primeira parte do texto do material com indentação
             currentY = addFormattedText(materialTextPart1, pageMargin, currentY, { 
-                fontSize: FONT_TEXT_CAPA, // Usando FONT_FOOTER_CAPA
+                fontSize: FONT_TEXT_CAPA,
                 lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
-                spaceAfter: 1, // Espaço mínimo antes do link
+                spaceAfter: 1, 
                 isParagraph: true
             });
             
-            // Adiciona o link na linha seguinte, alinhado com a indentação da primeira parte
             currentY = addFormattedText(materialLink, pageMargin, currentY, { 
                 fontSize: FONT_TEXT_CAPA, 
                 lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
-                spaceAfter: 1, // Espaço mínimo antes da parte 2
+                spaceAfter: 1,
             });
 
-            // Adiciona a segunda parte do texto do material com indentação
             currentY = addFormattedText(materialTextPart2, pageMargin, currentY, { 
                 fontSize: FONT_TEXT_CAPA, 
                 lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, 
@@ -474,11 +479,11 @@ const DownloadHandler = (() => {
         console.log("Gerando Introdução - Conceitos Relevantes...");
         currentY = addFormattedText("CONCEITOS RELEVANTES¹", pageMargin, currentY, { fontSize: FONT_TITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, align:'center', spaceAfter: SECTION_SPACING });
         currentY = addFormattedText("Sistemas socioecológicos", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
-        currentY = addFormattedText("O conceito de sistema socioecológico tem sido utilizado para integrar processos e componentes socioeconômicos e biofísicos para compreender, por exemplo, contextos em que múltiplos grupos interagem, fatores biofísicos afetam e são afetados por atividades sociais e econômicas e aspectos de escalas locais, nacionais e internacionais, como políticas públicas, cultura e poder, influenciam sua dinâmica (BUSCHBACHER, 2014).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
+        currentY = addFormattedText("O conceito de sistema socioecológico tem sido utilizado para integrar processos e componentes socioeconômicos e biofísicos para compreender, por exemplo, contextos em que múltiplos grupos interagem, fatores biofísicos afetam e são afetados por atividades sociais e econômicas e aspectos de escalas locais, nacionais e internacionais, como políticas públicas, cultura e poder, influenciam sua dinâmica (Buschbacher, 2014).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
         currentY = addFormattedText("Resiliência socioecológica", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
         currentY = addFormattedText("Não existe um consenso referente ao significado de resiliência socioecológica, dada à variedade de interpretações referentes ao termo ‘resiliência'. Aqui, entende-se como a capacidade do sistema socioecológico de aprender, se reorganizar, mudar e se adaptar para responder a perturbações e lidar com incertezas, ao mesmo tempo em que mantém suas características de estrutura e de função e as relações fundamentais que caracterizam seu regime de existência.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
         currentY = addFormattedText("Indicadores", pageMargin, currentY, { fontSize: FONT_SUBTITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, spaceAfter: LIST_ITEM_SPACING });
-        currentY = addFormattedText("Indicadores são ferramentas de medição e avaliação que contribuem no monitoramento de situações e processos identificando o que deve ser mudado ou potencializado até que se alcance o resultado pretendido (MINAYO, 2009). Embora indicadores, como quaisquer instrumentos, possam refletir a realidade de forma incompleta, eles auxiliam a visualizar um determinado contexto, diminuem incertezas e fornecem informações significativas que auxiliam processos de tomada de decisão (HANAI; ESPÍNDOLA, 2012; MINAYO, 2009).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING * 2, isParagraph: true });
+        currentY = addFormattedText("Indicadores são ferramentas de medição e avaliação que contribuem no monitoramento de situações e processos identificando o que deve ser mudado ou potencializado até que se alcance o resultado pretendido (minayo, 2009). Embora indicadores, como quaisquer instrumentos, possam refletir a realidade de forma incompleta, eles auxiliam a visualizar um determinado contexto, diminuem incertezas e fornecem informações significativas que auxiliam processos de tomada de decisão (Hanai; Espíndola, 2012; Minayo, 2009).", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING * 2, isParagraph: true });
         const footnoteText1_intro = "¹ Para aprofundamento sobre os conceitos, consultar Oliveira (2023).";
         const footnoteHeight1_intro = calculateTextHeight(footnoteText1_intro, pageWidth, FONT_RODAPE_ESPECIFICO_INTRO, LINE_HEIGHT_FACTOR_COMPACT);
         const footnoteYPos1_intro = pageHeight - pageMargin - footnoteHeight1_intro - 3;
@@ -522,32 +527,29 @@ const DownloadHandler = (() => {
 
         const textoAntesDoLink = "Para ajudar no aprimoramento contínuo deste sistema de indicadores, faça uma avaliação através do seguinte link:";
         currentY = addFormattedText(textoAntesDoLink, pageMargin, currentY, { 
-            spaceAfter: 2, // Menor espaço antes da URL
-            isParagraph: false // Não é um parágrafo completo
+            spaceAfter: 2,
+            isParagraph: false 
         });
 
         const urlAvaliacao = "https://forms.gle/L56Fs2Zv3Sfwhqf78";
-        const urlFontSize = FONT_BODY_INTRO -1; // Um pouco menor para o link
-        const urlColor = [0, 0, 238]; // Cor azul típica de link
+        const urlFontSize = FONT_BODY_INTRO -1; 
+        const urlColor = [0, 0, 238]; 
 
-        // Calcular a largura do texto da URL para o retângulo do link
-        pdf.setFontSize(urlFontSize); // Definir a fonte para cálculo correto da largura
+        pdf.setFontSize(urlFontSize); 
         const urlTextWidth = pdf.getStringUnitWidth(urlAvaliacao) * urlFontSize / pdf.internal.scaleFactor;
         const urlTextHeight = calculateTextHeight(urlAvaliacao, pageWidth, urlFontSize, LINE_HEIGHT_FACTOR_NORMAL); // Usar a função existente
 
-        // Verificar se a URL cabe na linha atual
         if (currentY + urlTextHeight + LIST_ITEM_SPACING > pageHeight - pageMargin ) {
             addNewPageAndNumber();
         }
 
         pdf.setTextColor(urlColor[0], urlColor[1], urlColor[2]);
         pdf.textWithLink(urlAvaliacao, pageMargin, currentY, { url: urlAvaliacao });
-        pdf.setTextColor(COLOR_BLACK[0], COLOR_BLACK[1], COLOR_BLACK[2]); // Resetar cor do texto
+        pdf.setTextColor(COLOR_BLACK[0], COLOR_BLACK[1], COLOR_BLACK[2]); 
         currentY += urlTextHeight + LIST_ITEM_SPACING;
 
 
-        // ***** INÍCIO: SEÇÃO RESULTADO DA APLICAÇÃO E PERFIL DOS PARTICIPANTES *****
-        // ... (COMO ANTES)
+        // --- SEÇÃO RESULTADO DA APLICAÇÃO E PERFIL DOS PARTICIPANTES ---
         if (currentY > pageMargin + 5) {
             addNewPageAndNumber();
         }
@@ -682,7 +684,7 @@ const DownloadHandler = (() => {
         }
 
 
-        // --- Adiciona Conteúdo Regular (Gráficos de Dimensão/Indicador) ---
+        // --- Adiciona Gráficos de Dimensão/Indicador ---
         let _currentDimensionNumberWritten = '';
         let _currentIndicatorIdWritten = '';
 
@@ -703,13 +705,13 @@ const DownloadHandler = (() => {
             const descMarginBottomRegular = PARAGRAPH_SPACING;
 
             let dimChanged = (itemDimNumber && itemDimNumber !== 'none' && _currentDimensionNumberWritten !== itemDimNumber);
-            let indChanged = (itemIndFullId && (_currentIndicatorIdWritten !== itemIndFullId || dimChanged)); // Indicador também muda se a dimensão mudou
+            let indChanged = (itemIndFullId && (_currentIndicatorIdWritten !== itemIndFullId || dimChanged)); 
 
-            if (isNewPageForImage) { // Se estamos no topo de uma nova página FORÇADA pela imagem anterior
-                dimChanged = true; // Força a reescrita da dimensão atual (e por consequência do indicador)
+            if (isNewPageForImage) { 
+                dimChanged = true; 
                 indChanged = true;
-                _currentDimensionNumberWritten = ''; // Reseta para garantir que a comparação funcione
-                _currentIndicatorIdWritten = '';   // Reseta para garantir que a comparação funcione
+                _currentDimensionNumberWritten = ''; 
+                _currentIndicatorIdWritten = '';   
             }
 
 
@@ -725,22 +727,19 @@ const DownloadHandler = (() => {
                     currentY = addFormattedText(itemDimDescText, pageMargin, currentY, { fontSize: descFontSizeRegular, spaceAfter: descMarginBottomRegular, isParagraph: true });
                 }
                 _currentDimensionNumberWritten = itemDimNumber;
-                _currentIndicatorIdWritten = ''; // Resetar indicador quando a dimensão muda
+                _currentIndicatorIdWritten = ''; 
             }
 
-            // Se a dimensão mudou, o indicador também precisa ser reescrito (se existir)
-            // Ou se o próprio indicador mudou dentro da mesma dimensão.
             if (indChanged && itemIndFullId) {
                 const indTitleHeight = calculateTextHeight(itemIndName, pageWidth, subtitleFontSizeRegular, LINE_HEIGHT_FACTOR_COMPACT);
                 let indDescHeight = itemIndDescText ? calculateTextHeight(PARAGRAPH_INDENT + itemIndDescText, pageWidth, descFontSizeRegular, LINE_HEIGHT_FACTOR_NORMAL) : 0;
 
                 if (currentY + indTitleHeight + titleMarginBottomRegular + indDescHeight + (itemIndDescText ? descMarginBottomRegular : 0) + 2 > pageHeight - pageMargin && currentY !== pageMargin) {
                     addNewPageAndNumber();
-                    // Se a página quebrou para o indicador, precisamos reescrever a dimensão atual ANTES do indicador
-                    if (_currentDimensionNumberWritten === itemDimNumber) { // Só reescreve a dimensão se ela for a correta
-                         _currentDimensionNumberWritten = ''; // Força re-escrita da dimensão
-                         addRegularContentTitlesAndDescriptions(itemData); // Chama recursivamente, a dimensão e este indicador serão escritos
-                         return; // Sai para evitar duplicidade do indicador
+                    if (_currentDimensionNumberWritten === itemDimNumber) { 
+                         _currentDimensionNumberWritten = '';
+                         addRegularContentTitlesAndDescriptions(itemData); 
+                         return; 
                     }
                 }
                 currentY = addFormattedText(itemIndName, pageMargin, currentY, { fontSize: subtitleFontSizeRegular, fontStyle:'bold', color: COLOR_DARK_GREY, align: 'left', spaceAfter: titleMarginBottomRegular });
@@ -751,7 +750,7 @@ const DownloadHandler = (() => {
             }
         };
         
-        const estimatedImageHeight = (pageHeight - (pageMargin *2)) * 0.55; // Ajuste este valor conforme necessário
+        const estimatedImageHeight = (pageHeight - (pageMargin *2)) * 0.55; 
 
         if (regularSquares.length > 0) {
             console.log(`Adicionando ${regularSquares.length} visualizações regulares...`);
@@ -771,14 +770,12 @@ const DownloadHandler = (() => {
                     if (!itemData) { console.warn("ItemData não encontrado para o square com dataId:", dataId); continue; }
                     if (dimensionNumber && String(itemData.dimensionNumber) !== String(dimensionNumber)) { continue; }
 
-                    // Adiciona Títulos e Descrições ANTES de qualquer imagem ou quebra de página para imagem
                     addRegularContentTitlesAndDescriptions(itemData);
 
                     const spaceNeededForImage = estimatedImageHeight;
                     if (currentY + spaceNeededForImage + 5 > pageHeight - pageMargin && currentY !== pageMargin) {
                         addNewPageAndNumber();
-                        // Após a quebra de página para a IMAGEM, reescreve os títulos/descrições do item ATUAL.
-                        addRegularContentTitlesAndDescriptions(itemData, true); // true para forçar reescrita na nova página
+                        addRegularContentTitlesAndDescriptions(itemData, true); 
                     }
 
                     prepareForCapture(square);
@@ -798,7 +795,7 @@ const DownloadHandler = (() => {
                         }
                         const imageX = (pageWidthUnaltered - imgWidthPDF) / 2;
                         pdf.addImage(imgData, 'JPEG', imageX, currentY, imgWidthPDF, imgHeightPDF);
-                        currentY += imgHeightPDF; // Atualiza currentY após adicionar a imagem
+                        currentY += imgHeightPDF; 
                     } catch (err) {
                         console.error(`Erro addImage Regular ${dataId}:`, err);
                         if(currentY + 20 > pageHeight - pageMargin && currentY > pageMargin) addNewPageAndNumber();
@@ -807,14 +804,9 @@ const DownloadHandler = (() => {
                         cleanupAfterCapture(square);
                     }
 
-                    // Quebra de página APÓS CADA GRÁFICO (exceto o último do documento inteiro)
                     if (i < regularSquares.length - 1) {
                         addNewPageAndNumber();
-                        // As variáveis _currentDimensionNumberWritten e _currentIndicatorIdWritten
-                        // manterão seu estado para a próxima iteração,
-                        // permitindo que addRegularContentTitlesAndDescriptions decida se reescreve.
                     } else {
-                        // Após o último gráfico, adiciona um pequeno espaço antes de potencialmente ir para Referências
                         currentY += PARAGRAPH_SPACING;
                     }
                     await new Promise(resolve => setTimeout(resolve, 100));
@@ -858,7 +850,7 @@ const DownloadHandler = (() => {
         for (const ref of references) {
             currentY = addFormattedText(ref, pageMargin, currentY, {
                 fontSize: FONT_REFERENCE_ITEM,
-                spaceAfter: LIST_ITEM_SPACING, // Usando LIST_ITEM_SPACING
+                spaceAfter: LIST_ITEM_SPACING, 
                 isReferenceItem: true
             });
         }
@@ -879,7 +871,7 @@ const DownloadHandler = (() => {
                 document.body.removeChild(loadingOverlay);
             }
         }
-    }; // Fim downloadPdf
+    }; 
 
 
     // --- Inicialização ---

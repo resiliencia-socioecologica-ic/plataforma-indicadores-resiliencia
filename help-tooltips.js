@@ -1,13 +1,19 @@
-/* help-tooltips.js */
-/* Gerencia a exibição de balões de ajuda (tooltips) ao passar o mouse sobre ícones específicos. */
+/*
+ * Script: help-tooltips.js
+ *
+ * Objetivo: Gerenciar a exibição de balões de ajuda (tooltips) de forma dinâmica e centralizada na interface.
+ *
+ * Funcionamento:
+ * 1. O script contém um objeto `helpTexts` que mapeia chaves de ajuda (ex: 'obterForms') para seus respectivos textos descritivos.
+ * 2. Ele monitora eventos de 'mouseover' em toda a página, buscando por elementos HTML que tenham a classe '.help-icon'.
+ * 3. Ao encontrar um, ele lê o atributo 'data-help-key' do ícone para identificar qual texto de ajuda deve ser exibido.
+ * 4. Um elemento <div> (o tooltip) é criado dinamicamente, posicionado de forma inteligente próximo ao ícone para não sair da tela.
+ * 5. O tooltip é removido automaticamente quando o mouse sai do ícone ('mouseout') ou quando o usuário clica em qualquer lugar da página, garantindo uma experiência limpa.
+ */
 
-(function() { // IIFE para evitar poluição global
+(function() { 
 
-    // --- 1. Central de Textos de Ajuda ---
-    // Adicione ou modifique chaves e textos conforme necessário.
-    // A 'chave' deve corresponder ao valor do atributo 'data-help-key' no HTML.
     const helpTexts = {
-        // --- Geral ---
         obterForms:"Modelos dos formulários (Microsoft Forms). Para obter sua própria cópia editável e aplicar o questionário: 1. Clique no link do grupo desejado. 2. Na página que abrir, clique em 'Duplicar este formulário'. 3. Entre com sua conta Microsoft. Não tem? Clique em 'Crie uma!' (gratuito) e siga os passos de criação de conta. 4. A cópia estará salva em seus Forms.",
         obterTabelaConsulta: "Clique em 'Tabela de Consulta Base.' para baixar um modelo (.xlsx) da 'Tabela de Consulta' ou para poder utilizar a tabela base.",
         arquivosSeparados: "Use esta opção se você possui a 'Tabela de Consulta' e os arquivos de respostas de cada grupo (Estudantes, Familiares, etc.) em arquivos Excel (.xlsx) ou CSV (.csv) separados. Pelo menos a Tabela de Consulta e um arquivo de respostas são necessários.",
@@ -23,30 +29,25 @@
         
     };
 
-    // --- 2. Criação e Gerenciamento do Tooltip ---
-    let tooltipElement = null; // Guarda referência ao tooltip ativo
+    let tooltipElement = null;
 
     function createTooltip(targetElement, helpKey) {
-        // Remove qualquer tooltip existente
         removeTooltip();
 
         const text = helpTexts[helpKey];
         if (!text) {
             console.warn(`Help text not found for key: ${helpKey}`);
-            return; // Não mostra tooltip se o texto não for encontrado
+            return; 
         }
 
-        // Cria o elemento tooltip
         tooltipElement = document.createElement('div');
-        tooltipElement.className = 'help-tooltip'; // Classe para estilização
-        tooltipElement.textContent = text; // Define o texto
-        tooltipElement.style.position = 'absolute'; // Necessário para posicionamento
-        tooltipElement.style.zIndex = '1001'; // Garante que fique acima de outros elementos (ajuste se necessário)
+        tooltipElement.className = 'help-tooltip'; 
+        tooltipElement.textContent = text; 
+        tooltipElement.style.position = 'absolute'; 
+        tooltipElement.style.zIndex = '1001'; 
 
-        // Adiciona ao corpo do documento (ou a um container específico se preferir)
         document.body.appendChild(tooltipElement);
 
-        // Posiciona o tooltip
         positionTooltip(targetElement);
     }
 
@@ -58,28 +59,22 @@
         const scrollX = window.scrollX || window.pageXOffset;
         const scrollY = window.scrollY || window.pageYOffset;
 
-        // Posicionamento padrão: abaixo e centralizado/ligeiramente à direita do ícone
-        let top = targetRect.bottom + scrollY + 5; // 5px abaixo do ícone
-        let left = targetRect.left + scrollX + (targetRect.width / 2) - (tooltipRect.width / 2); // Centralizado
+        let top = targetRect.bottom + scrollY + 5; 
+        let left = targetRect.left + scrollX + (targetRect.width / 2) - (tooltipRect.width / 2); 
 
-        // Ajuste básico para não sair da tela (pode ser melhorado)
-        // Verifica se sai pela direita
         if (left + tooltipRect.width > window.innerWidth) {
-            left = window.innerWidth - tooltipRect.width - 10; // 10px de margem da direita
+            left = window.innerWidth - tooltipRect.width - 10; 
         }
-        // Verifica se sai pela esquerda
         if (left < 0) {
-            left = 10; // 10px de margem da esquerda
+            left = 10; 
         }
-         // Verifica se sai por baixo (menos comum de ajustar, mas possível)
          if (top + tooltipRect.height > window.innerHeight + scrollY) {
-             // Tenta posicionar acima
-             top = targetRect.top + scrollY - tooltipRect.height - 5; // 5px acima
+             top = targetRect.top + scrollY - tooltipRect.height - 5; 
          }
 
         tooltipElement.style.top = `${top}px`;
         tooltipElement.style.left = `${left}px`;
-        tooltipElement.style.opacity = '1'; // Garante visibilidade após posicionar
+        tooltipElement.style.opacity = '1'; 
     }
 
     function removeTooltip() {
@@ -89,11 +84,7 @@
         }
     }
 
-    // --- 3. Event Listeners (Delegação) ---
-    // Escuta eventos no 'body' para capturar interações com ícones de ajuda,
-    // mesmo que eles sejam adicionados dinamicamente.
     document.body.addEventListener('mouseover', (event) => {
-        // Encontra o elemento .help-icon mais próximo que foi alvo do evento
         const helpIcon = event.target.closest('.help-icon');
         if (helpIcon) {
             const helpKey = helpIcon.getAttribute('data-help-key');
@@ -104,21 +95,14 @@
     });
 
     document.body.addEventListener('mouseout', (event) => {
-        // Remove o tooltip se o mouse sair do ícone de ajuda
         const helpIcon = event.target.closest('.help-icon');
-        // Verifica se o mouse não está indo para o próprio tooltip (relatedTarget)
-        // Isso permite que o tooltip permaneça se o mouse se mover brevemente para ele.
-        // No entanto, para simplicidade, removeremos ao sair do ícone.
-        // Para manter o tooltip ao passar sobre ele, a lógica seria mais complexa.
+        
          if (helpIcon) {
-             // Verifica se o mouse está realmente saindo da área do ícone e não indo para o tooltip
-             // (Esta verificação pode ser um pouco complexa, vamos simplificar por agora)
-              removeTooltip(); // Remove ao sair do ícone
+              removeTooltip(); 
          }
     });
 
-    // Opcional: Remover tooltip se o usuário clicar em qualquer lugar
-    document.body.addEventListener('click', removeTooltip, true); // Usa captura para pegar antes
+    document.body.addEventListener('click', removeTooltip, true); 
 
     console.log("Help Tooltips script initialized.");
 

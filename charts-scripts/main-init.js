@@ -1,34 +1,44 @@
 /*
- * main-init.js (Preparado para TeiaPair e Pizza Perfil v2)
- * Ponto de entrada principal para inicialização das visualizações.
- * 1. Espera o DOM carregar.
- * 2. Verifica se window.visualizacaoData está pronto (aguarda se necessário).
- * 3. Ordena os IDs dos gráficos (incluindo TeiaPair e Pizza Perfil).
- * 4. **MODIFICADO**: Separa processamento de Pizza Perfil dos demais itens.
- * 5. Extrai dimensões únicas dos dados *não-perfil*.
- * 6. Cria botões de filtro para cada dimensão e um botão "Todas".
- * 7. Itera sobre os IDs ordenados:
- *    - Cria squares de Pizza Perfil no container dedicado (sem filtro/subtítulo).
- *    - Insere subtítulos de Indicador *apenas para itens não-perfil*.
- *    - Cria squares normais (Barra, Teia, etc.) no grid principal com atributos de filtro.
- * 8. Oculta seção de perfil se vazia.
- * 9. Adiciona event listener aos botões de filtro.
- * 10. Chama as funções .init() dos módulos de gráfico/tabela (incluindo PieChart).
- * 11. Configura listeners globais.
+ * Script: main-init.js
+ *
+ * Objetivo: Coordenar a inicialização e renderização de todas as visualizações
+ * de dados na página, incluindo gráficos, tabelas e filtros, após o carregamento
+ * dos dados necessários. Este script lida com a organização dos elementos na interface
+ * e a interação inicial do usuário.
+ *
+ * Funcionamento:
+ * 1. Aguarda o carregamento completo do DOM (Document Object Model).
+ * 2. Carrega as descrições dos indicadores e dimensões de um arquivo JSON externo, se ainda não estiverem disponíveis.
+ * 3. Identifica e limpa os principais containers HTML onde as visualizações serão inseridas.
+ * 4. Cria um elemento para exibir a descrição da dimensão, posicionando-o abaixo do título da dimensão.
+ * 5. Mapeia os diferentes tipos de gráficos/quadros para suas classes CSS correspondentes.
+ * 6. Itera sobre os dados de visualização disponíveis (`window.visualizacaoData`), que contêm as informações sobre cada gráfico/tabela a ser gerado.
+ * - Ordena os IDs dos itens de visualização para garantir uma apresentação lógica.
+ * - Cria "squares" (contêineres visuais) para cada item, categorizando-os entre gráficos de perfil (Pizza) e outros tipos (Barra, Teia, etc.).
+ * - Insere títulos e descrições para indicadores e dimensões, baseando-se nos dados carregados e nas descrições do JSON externo.
+ * 7. Gerencia a visibilidade da seção de gráficos de perfil, ocultando-a se não houver dados de perfil.
+ * 8. Cria botões de filtro para cada dimensão única encontrada nos dados, além de um botão para exibir "Todas as Dimensões".
+ * 9. Adiciona um listener de evento aos botões de filtro, que atualiza o título e a descrição da dimensão e filtra as visualizações exibidas no grid principal.
+ * 10. Popula uma tabela de resumo de informações com dados da escola e contagem de respondentes por grupo.
+ * 11. Invoca a função `init()` de cada módulo de visualização (ex: `PieChart.init()`, `BarChart.init()`, `RadarChart.init()`, `ResponseTable.init()`, `PerguntasTable.init()`) para que cada um renderize seus respectivos gráficos ou tabelas dentro dos "squares" criados.
+ * 12. Configura listeners de eventos adicionais para interações do usuário, como:
+ * - Abertura de modais de edição para gráficos e tabelas de respostas.
+ * - Recolhimento/expansão de seções de perguntas/respostas.
+ * - Fechamento de modais de edição clicando no overlay.
+ * - Controle de abertura e fechamento da barra lateral de download.
+ * 13. Inclui uma lógica para aguardar a disponibilidade dos dados de visualização (`window.visualizacaoData`) antes de iniciar o processo de renderização, com um fallback de timeout para evitar travamentos.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("main-init.js: DOMContentLoaded disparado.");
 
-    // Função auxiliar para comparar IDs (sem mudanças)
     function compareIds(idA, idB) { const strIdA = String(idA); const strIdB = String(idB); const partsA = strIdA.split('_'); const partsB = strIdB.split('_'); const numericPartA = partsA[0]; const numericPartB = partsB[0]; if (numericPartA !== numericPartB) { const numPartsA = numericPartA.split('.').map(n => parseInt(n, 10)); const numPartsB = numericPartB.split('.').map(n => parseInt(n, 10)); for (let i = 0; i < Math.max(numPartsA.length, numPartsB.length); i++) { let valA = numPartsA[i]; let valB = numPartsB[i]; if (isNaN(valA) || isNaN(valB)) { const strNumA = String(numericPartA).split('.')[i] || ''; const strNumB = String(numericPartB).split('.')[i] || ''; if (isNaN(valA) && isNaN(valB)){ if (strNumA !== strNumB) return strNumA.localeCompare(strNumB); } else return isNaN(valA) ? 1 : -1; } else if (valA !== valB) { return valA - valB; } } } const categoryA = partsA.slice(1).join('_') || ''; const categoryB = partsB.slice(1).join('_') || ''; if (categoryA !== categoryB) { return categoryA.localeCompare(categoryB); } return 0; }
 
-    // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-    let descricoesData = null; // Para armazenar os dados do JSON
+    let descricoesData = null; 
 
     async function carregarDescricoes() {
         try {
-            const response = await fetch('descricoes_indicadores.json'); // CERTIFIQUE-SE QUE ESTE CAMINHO ESTÁ CORRETO
+            const response = await fetch('descricoes_indicadores.json'); 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -36,89 +46,68 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("main-init.js: descricoes_indicadores.json carregado com sucesso.");
         } catch (error) {
             console.error("main-init.js: Erro ao carregar descricoes_indicadores.json:", error);
-            // Fallback para objeto vazio para evitar quebras no resto do script
             descricoesData = { descricoesDimensoes: {}, descricoesIndicadores: {} };
         }
     }
-    // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
 
 
-    // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-    async function initializeVisualizations() { // Adicionado 'async'
-    // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
-        console.log("main-init.js: Iniciando criação...");
+    async function initializeVisualizations() {
+    console.log("main-init.js: Iniciando criação...");
 
-        // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-        if (!descricoesData) { // Carrega se ainda não o fez
-            await carregarDescricoes();
-        }
-        // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
+    if (!descricoesData) {
+        await carregarDescricoes();
+    }
 
-        // --- Seleção dos Elementos Essenciais ---
-        const mainGridContainer = document.querySelector('.grid-container');
-        const profileChartsContainer = document.getElementById('profile-charts-container');
-        const profileSectionTitle = document.getElementById('profile-section-title');
-        const filterButtonsContainer = document.getElementById('dimension-filters');
-        const dimensionTitleDisplay = document.getElementById('dimension-title');
+    const mainGridContainer = document.querySelector('.grid-container');
+    const profileChartsContainer = document.getElementById('profile-charts-container');
+    const profileSectionTitle = document.getElementById('profile-section-title');
+    const filterButtonsContainer = document.getElementById('dimension-filters');
+    const dimensionTitleDisplay = document.getElementById('dimension-title');
 
-        // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-        // Elemento para descrição da dimensão (cria se não existir)
-        let dimensionDescriptionDisplay = document.getElementById('dimension-description-display-text');
-        if (!dimensionDescriptionDisplay && dimensionTitleDisplay && dimensionTitleDisplay.parentNode) {
-            dimensionDescriptionDisplay = document.createElement('div');
-            dimensionDescriptionDisplay.id = 'dimension-description-display-text';
-            dimensionDescriptionDisplay.className = 'dimension-description-text'; // Classe para estilização
-            // Insere a descrição APÓS o título da dimensão
-            dimensionTitleDisplay.parentNode.insertBefore(dimensionDescriptionDisplay, dimensionTitleDisplay.nextSibling);
-        } else if (!dimensionDescriptionDisplay) {
-             console.warn("main-init.js: dimensionTitleDisplay não encontrado para inserir descrição da dimensão, ou dimensionDescriptionDisplay já existe com outro ID.");
-        }
-        // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
+    let dimensionDescriptionDisplay = document.getElementById('dimension-description-display-text');
+    if (!dimensionDescriptionDisplay && dimensionTitleDisplay && dimensionTitleDisplay.parentNode) {
+        dimensionDescriptionDisplay = document.createElement('div');
+        dimensionDescriptionDisplay.id = 'dimension-description-display-text';
+        dimensionDescriptionDisplay.className = 'dimension-description-text';
+        dimensionTitleDisplay.parentNode.insertBefore(dimensionDescriptionDisplay, dimensionTitleDisplay.nextSibling);
+    } else if (!dimensionDescriptionDisplay) {
+        console.warn("main-init.js: dimensionTitleDisplay não encontrado para inserir descrição da dimensão, ou dimensionDescriptionDisplay já existe com outro ID.");
+    }
 
+    if (!mainGridContainer || !profileChartsContainer || !profileSectionTitle || !filterButtonsContainer || !dimensionTitleDisplay) {
+        console.error("Erro crítico: Elementos essenciais não encontrados (grid, profile container/title, filters, dim title).");
+        document.body?.insertAdjacentHTML('afterbegin', '<p style="color: red; background: yellow; padding: 10px; text-align: center;">Erro: Falha ao carregar elementos da página.</p>');
+        return;
+    }
 
-        // --- Verificação da Existência dos Elementos ---
-        if (!mainGridContainer || !profileChartsContainer || !profileSectionTitle || !filterButtonsContainer || !dimensionTitleDisplay) {
-            console.error("Erro crítico: Elementos essenciais não encontrados (grid, profile container/title, filters, dim title).");
-            document.body?.insertAdjacentHTML('afterbegin', '<p style="color: red; background: yellow; padding: 10px; text-align: center;">Erro: Falha ao carregar elementos da página.</p>');
-            return;
-        }
+    mainGridContainer.innerHTML = '';
+    profileChartsContainer.innerHTML = '';
+    filterButtonsContainer.innerHTML = '';
+    dimensionTitleDisplay.textContent = 'Carregando...';
+    if (dimensionDescriptionDisplay) dimensionDescriptionDisplay.innerHTML = '';
 
-        // --- Limpeza Inicial ---
-        mainGridContainer.innerHTML = '';
-        profileChartsContainer.innerHTML = '';
-        filterButtonsContainer.innerHTML = '';
-        dimensionTitleDisplay.textContent = 'Carregando...';
-        // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-        if (dimensionDescriptionDisplay) dimensionDescriptionDisplay.innerHTML = ''; // Limpa descrição da dimensão
-        // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
+    const typeMapping = {
+        'Pizza': 'grafico_de_pizza',
+        'Barra': 'grafico_de_barras',
+        'Teia': 'grafico_de_teia',
+        'Quadro de respostas abertas': 'quadro_de_respostas',
+        'TeiaPair': 'teia_pair_special'
+    };
 
+    const visualizacaoData = window.visualizacaoData || {};
+    let idsParaInicializar = Object.keys(visualizacaoData);
 
-        // --- Mapeamento de Tipos e Obtenção dos Dados ---
-        const typeMapping = {
-            'Pizza': 'grafico_de_pizza',
-            'Barra': 'grafico_de_barras',
-            'Teia': 'grafico_de_teia',
-            'Quadro de respostas abertas': 'quadro_de_respostas',
-            'TeiaPair': 'teia_pair_special'
-        };
+    idsParaInicializar.sort(compareIds);
 
-        const visualizacaoData = window.visualizacaoData || {};
-        let idsParaInicializar = Object.keys(visualizacaoData);
-
-        idsParaInicializar.sort(compareIds);
-
-        if (idsParaInicializar.length === 0) {
-            console.warn("window.visualizacaoData vazio.");
-            mainGridContainer.innerHTML = '<p>Nenhum dado de visualização encontrado.</p>';
-            profileSectionTitle.style.display = 'none';
-            profileChartsContainer.style.display = 'none';
-            dimensionTitleDisplay.textContent = 'Nenhuma Dimensão Encontrada';
-            // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-            if(dimensionDescriptionDisplay) dimensionDescriptionDisplay.style.display = 'none';
-            // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
-            return;
-        }
-
+    if (idsParaInicializar.length === 0) {
+        console.warn("window.visualizacaoData vazio.");
+        mainGridContainer.innerHTML = '<p>Nenhum dado de visualização encontrado.</p>';
+        profileSectionTitle.style.display = 'none';
+        profileChartsContainer.style.display = 'none';
+        dimensionTitleDisplay.textContent = 'Nenhuma Dimensão Encontrada';
+        if(dimensionDescriptionDisplay) dimensionDescriptionDisplay.style.display = 'none';
+        return;
+    }
         const dimensionsMap = new Map();
         let currentIndicatorFullId = null;
         let profileChartsCreatedCount = 0;
@@ -150,32 +139,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (dataItem.dimensionNumber && dataItem.indicatorNumber) {
                     const itemDimensionNumber = String(dataItem.dimensionNumber).trim();
                     const itemIndicatorNumber = String(dataItem.indicatorNumber).trim();
-                    // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-                    const indicatorKeyForJson = `${itemDimensionNumber}.${itemIndicatorNumber}`; // Usar esta chave para o JSON
-                    const itemIndicatorFullName = dataItem.indicatorName || `Indicador ${indicatorKeyForJson}`; // Usar nome completo no título
-                    // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
+                    const indicatorKeyForJson = `${itemDimensionNumber}.${itemIndicatorNumber}`;
+                    const itemIndicatorFullName = dataItem.indicatorName || `Indicador ${indicatorKeyForJson}`; 
 
                     if (indicatorKeyForJson !== currentIndicatorFullId) {
                         const subtitleElement = document.createElement('h3');
                         subtitleElement.className = 'indicator-subtitle';
-                        subtitleElement.textContent = itemIndicatorFullName; // Usar o nome completo
+                        subtitleElement.textContent = itemIndicatorFullName; 
                         subtitleElement.setAttribute('data-indicator-full-id', indicatorKeyForJson);
                         subtitleElement.setAttribute('data-dimension-number', itemDimensionNumber);
                         targetContainer.appendChild(subtitleElement);
                         currentIndicatorFullId = indicatorKeyForJson;
 
-                        // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-                        // Adicionar descrição do indicador
                         if (descricoesData && descricoesData.descricoesIndicadores && descricoesData.descricoesIndicadores[indicatorKeyForJson]) {
                             const indicadorDescElement = document.createElement('p');
-                            indicadorDescElement.className = 'indicator-description-text'; // Classe para estilização
+                            indicadorDescElement.className = 'indicator-description-text'; 
                             indicadorDescElement.textContent = descricoesData.descricoesIndicadores[indicatorKeyForJson];
-                            // Adicionar atributos para filtragem
                             indicadorDescElement.setAttribute('data-indicator-full-id', indicatorKeyForJson);
                             indicadorDescElement.setAttribute('data-dimension-number', itemDimensionNumber);
                             targetContainer.appendChild(indicadorDescElement);
                         }
-                        // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
                     }
                 }
 
@@ -185,9 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 square.setAttribute('data-id', id);
                 square.setAttribute('data-dimension-number', dataItem.dimensionNumber ? String(dataItem.dimensionNumber).trim() : 'none');
                 if (dataItem.dimensionNumber && dataItem.indicatorNumber) {
-                    // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
                     square.setAttribute('data-indicator-full-id', `${String(dataItem.dimensionNumber).trim()}.${String(dataItem.indicatorNumber).trim()}`);
-                    // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
                 }
                 if (dataType === 'teia_pair_special') { square.classList.add('special-teia-double-height'); }
                 square.innerHTML = `<div class="loading-placeholder">Carregando ${id}...</div>`;
@@ -223,9 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clickedButton.classList.add('active');
                 dimensionTitleDisplay.textContent = selectedDimension === 'all' ? 'Todas as Dimensões' : (dimensionsMap.get(selectedDimension) || `Dimensão ${selectedDimension}`);
 
-                // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-                // Atualizar descrição da dimensão
-                if (dimensionDescriptionDisplay) { // Verifica se o elemento existe
+                if (dimensionDescriptionDisplay) {
                     if (selectedDimension !== 'all' && descricoesData && descricoesData.descricoesDimensoes && descricoesData.descricoesDimensoes[selectedDimension]) {
                         dimensionDescriptionDisplay.textContent = descricoesData.descricoesDimensoes[selectedDimension];
                         dimensionDescriptionDisplay.style.display = 'block';
@@ -234,14 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         dimensionDescriptionDisplay.style.display = 'none';
                     }
                 }
-                // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
 
                 const squaresInMainGrid = mainGridContainer.querySelectorAll('.square');
                 const subtitlesInMainGrid = mainGridContainer.querySelectorAll('.indicator-subtitle');
-                // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-                // Selecionar também as descrições dos indicadores para filtrar
+              
                 const indicatorDescriptionsInMainGrid = mainGridContainer.querySelectorAll('.indicator-description-text');
-                // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
                 let visibleSquareCount = 0;
 
                 squaresInMainGrid.forEach(square => {
@@ -253,26 +229,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const d = subtitle.dataset.dimensionNumber;
                     subtitle.style.display = (selectedDimension === 'all' || d === selectedDimension) ? 'block' : 'none';
                 });
-                // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-                // Filtrar descrições dos indicadores
+               
                 indicatorDescriptionsInMainGrid.forEach(desc => {
-                    const d = desc.dataset.dimensionNumber; // Assume que este atributo está presente
+                    const d = desc.dataset.dimensionNumber; 
                     desc.style.display = (selectedDimension === 'all' || d === selectedDimension) ? 'block' : 'none';
                 });
-                // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
 
                 console.log(`Filtro aplicado: Dimensão '${selectedDimension}'. ${visibleSquareCount} squares normais visíveis.`);
              }
         });
 
         dimensionTitleDisplay.textContent = 'Todas as Dimensões';
-        // <<< MODIFICAÇÃO/ADIÇÃO INÍCIO >>>
-        // Limpar descrição da dimensão inicialmente ao carregar "Todas as Dimensões"
         if (dimensionDescriptionDisplay) {
             dimensionDescriptionDisplay.textContent = '';
             dimensionDescriptionDisplay.style.display = 'none';
         }
-        // <<< MODIFICAÇÃO/ADIÇÃO FIM >>>
 
         console.log("main-init.js: Chamando inicializadores dos módulos...");
         if (typeof PieChart !== 'undefined' && PieChart.init) PieChart.init(); else console.error("Módulo PieChart não carregado ou não possui init().");
@@ -286,14 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.visualizacaoData && Object.keys(window.visualizacaoData).length > 0) {
         console.log("main-init.js: Dados prontos. Iniciando.");
-        initializeVisualizations(); // Chama a função (agora async)
+        initializeVisualizations(); 
     } else {
         console.log("main-init.js: Aguardando 'visualizacaoDataReady'.");
         const handleDataReady = () => {
             console.log("main-init.js: Evento 'visualizacaoDataReady' recebido.");
             if (window.visualizacaoData && Object.keys(window.visualizacaoData).length > 0) {
                 console.log("main-init.js: Iniciando após evento.");
-                initializeVisualizations();  // Chama a função (agora async)
+                initializeVisualizations();  
             } else {
                 console.error("Erro: 'visualizacaoDataReady' disparado, mas dados inválidos.");
                 const gridContainer = document.querySelector('.grid-container');
@@ -309,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!hasFilterButtons) {
                 if (window.visualizacaoData && Object.keys(window.visualizacaoData).length > 0) {
                     console.log("main-init.js: Iniciando no timeout.");
-                    initializeVisualizations();  // Chama a função (agora async)
+                    initializeVisualizations();  
                 } else {
                     console.error("Erro: Timeout esperando dados.");
                     const gridContainer = document.querySelector('.grid-container');
