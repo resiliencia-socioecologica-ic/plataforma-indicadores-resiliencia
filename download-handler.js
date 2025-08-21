@@ -429,13 +429,13 @@ const DownloadHandler = (() => {
                 currentY += combinedLineHeight + CAPA_INFO_LINE_SPACING;
             }
             currentY += CAPA_AFTER_INFO_SPACING - CAPA_INFO_LINE_SPACING;
-            currentY = addFormattedText("Este relatório apresenta os resultados da aplicação do sistema de indicadores sobre aprendizagem para resiliência socioecológica de comunidades rurais com a comunidade escolar da instituição de ensino participante.", pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: PARAGRAPH_SPACING, align: 'justify' });
+            currentY = addFormattedText("Este relatório apresenta os resultados obtidos pela escola a partir da aplicação dos indicadores.", pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: PARAGRAPH_SPACING, align: 'justify' });
             currentY = addFormattedText("Tópicos abordados no relatório:", pageMargin, currentY, { fontSize: FONT_TEXT_CAPA, spaceAfter: LIST_ITEM_SPACING });
             const topics = [ "1. Conceitos relevantes;", "2. Objetivos do sistema de indicadores;", "3. Sugestão para análise dos resultados e encaminhamentos;", "4. Resultados da aplicação dos indicadores na instituição participante, com descrição de cada dimensão e indicador;", "5. Referências." ];
             for (let i = 0; i < topics.length; i++) { const topic = String(topics[i] || ""); currentY = addFormattedText(topic, pageMargin + 5, currentY, { fontSize: FONT_TEXT_CAPA, maxWidth: pageWidth - 10, spaceAfter: LIST_ITEM_SPACING + (i === topics.length -1 ? PARAGRAPH_SPACING : 0), isListItem: true }); }
             const materialTextPart1 = "O material aqui disponível foi gerado em:";
             const materialLink = "https://resiliencia-socioecologica-ic.github.io/plataforma-indicadores-resiliencia/";
-            const materialTextPart2 = "Produzido por Gabriel Mazetto(I) (bolsista PIBIC/CNPq/INPE), Maria Paula Pires de Oliveira(I), Denise Helena Lombardo Ferreira(II) e Minella Alves Martins(II), com apoio da Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) – Código de Financiamento 001.";
+            const materialTextPart2 = "Produzido por Gabriel Mazetto(I) (bolsista PIBIC/CNPq/INPE), Maria Paula Pires de Oliveira(I), Denise Helena Lombardo Ferreira(II) e Minella Alves Martins(II), com apoio do Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq) e da Coordenação de Aperfeiçoamento de Pessoal de Nível Superior (CAPES) - Código de Financiamento 001.";
             
             const indentAmount = pdf.getStringUnitWidth(PARAGRAPH_INDENT) * FONT_FOOTER_CAPA / pdf.internal.scaleFactor;
 
@@ -489,11 +489,13 @@ const DownloadHandler = (() => {
         const footnoteYPos1_intro = pageHeight - pageMargin - footnoteHeight1_intro - 3;
         if (currentY < footnoteYPos1_intro) { addFormattedText(footnoteText1_intro, pageMargin, footnoteYPos1_intro, {fontSize: FONT_RODAPE_ESPECIFICO_INTRO, color: COLOR_GREY, lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, advanceY: false}); } else { currentY = addFormattedText(footnoteText1_intro, pageMargin, currentY, {fontSize: FONT_RODAPE_ESPECIFICO_INTRO, color: COLOR_GREY, lineHeightFactor: LINE_HEIGHT_FACTOR_COMPACT, spaceAfter: PARAGRAPH_SPACING}); }
         addNewPageAndNumber();
+
         console.log("Gerando Introdução - Objetivos e Sugestão...");
         currentY = addFormattedText("OBJETIVOS DO SISTEMA DE INDICADORES", pageMargin, currentY, { fontSize: FONT_TITLE_INTRO, fontStyle: 'bold', color: COLOR_DARK_GREY, align:'center', spaceAfter: SECTION_SPACING });
-        currentY = addFormattedText("Estes indicadores possibilitam conhecer a percepção da comunidade escolar em relação ao papel das práticas adotadas na instituição de ensino para o desenvolvimento de conhecimentos e habilidades que ajudem a fortalecer a resiliência socioecológica de comunidades rurais. Dessa maneira, os indicadores podem ser utilizados para visualizar possíveis efeitos na vida dos estudantes e em suas comunidades, assim como identificar pontos fortes e frágeis e criar estratégias de melhorias.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
-        currentY = addFormattedText("Desse modo, este sistema de indicadores tem como objetivos:", pageMargin, currentY, { spaceAfter: LIST_ITEM_SPACING, isParagraph: false });
-        const objetivos = [ "• Facilitar a coleta sistemática de dados para avaliar as práticas da escola;", "• Auxiliar a compreensão e o acompanhamento dos resultados;", "• Fornecer subsídios para tomada de decisão e amparar a gestão escolar." ];
+        currentY = addFormattedText("Esta ferramenta de gestão foi criada para apoiar escolas que atuam com educação do campo na compreensão do papel de suas práticas pedagógicas no desenvolvimento de conhecimentos e habilidades que contribuem para o fortalecimento da resiliência socioecológica de comunidades rurais.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
+        currentY = addFormattedText("Os indicadores não se propõem a aferir concretamente mudanças comportamentais, mas sua aplicação permite identificar as percepções da comunidade escolar sobre os efeitos das práticas na vida dos estudantes e em suas comunidades, além de apontar aspectos que orientem estratégias de melhoria.", pageMargin, currentY, { spaceAfter: PARAGRAPH_SPACING, isParagraph: true });
+        currentY = addFormattedText("Desse modo, o sistema de indicadores:", pageMargin, currentY, { spaceAfter: LIST_ITEM_SPACING, isParagraph: false });
+        const objetivos = [ "• Facilita a coleta sistemática de dados para avaliar as práticas da escola;", "• Auxilia a compreensão e o acompanhamento de resultados;", "• Fornece subsídios para a tomada de decisão e para a gestão escolar." ];
         for (const obj of objetivos) { currentY = addFormattedText(obj, pageMargin + 5, currentY, { maxWidth: pageWidth - 5, spaceAfter: LIST_ITEM_SPACING, isListItem: true }); }
         currentY += PARAGRAPH_SPACING;
         currentY = addFormattedText("Assim, os indicadores não se propõem a aferir concretamente mudanças comportamentais, mas a auxiliar a gestão escolar com um levantamento de dados que mapeiam como as práticas da escola ajudam na promoção da aprendizagem para resiliência socioecológica e o ponto de vista da comunidade escolar quanto aos resultados dessas ações.", pageMargin, currentY, { spaceAfter: SECTION_SPACING + PARAGRAPH_SPACING, isParagraph: true });
